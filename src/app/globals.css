@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ========== Tokens de design (nomeados por PAPEL) ========== */
+@theme {
+  /* Fundos e superfícies */
+  --color-bg: #0f1420;
+  --color-surface: #171e2e;
+  --color-elevated: #202a3f;
+  --color-border: #2b3650;
+
+  /* Texto */
+  --color-text: #e6eaf2;
+  --color-muted: #97a3b8;
+
+  /* Acentos */
+  --color-primary: #8b9cf7;
+  --color-primary-hover: #a3b1fa;
+  --color-accent: #5cc8c0;
+  --color-star: #f2c46d;
+
+  /* Estados */
+  --color-success: #6fcf97;
+  --color-warning: #e5b567;
+  --color-danger: #e57c7c;
+
+  /* Tipografia */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Raios */
+  --radius-card: 0.875rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ========== Base ========== */
+@layer base {
+  html {
+    color-scheme: dark;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Foco visível e acessível, na cor da marca */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+
+  /* Respeita quem prefere menos animação (combina com a ideia de calma) */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ========== Scrollbar discreta ========== */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
 }
