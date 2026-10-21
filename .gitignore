@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# vídeos e capas enviados em desenvolvimento
+/storage/*
+!/storage/.gitkeep
+
 # vercel
 .vercel
 

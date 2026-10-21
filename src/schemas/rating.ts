@@ -1,0 +1,9 @@
+import { z } from "zod";
+
+export const ratingSchema = z.object({
+  movieId: z.uuid(),
+  score: z.number().int().min(1).max(5),
+  comment: z.string().trim().max(1000).optional(),
+});
+
+export type RatingInput = z.infer<typeof ratingSchema>;
