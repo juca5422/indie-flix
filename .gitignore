@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.*
-.zip*
+*.zip
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
