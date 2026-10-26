@@ -6,7 +6,7 @@ import { MovieCard } from "@/components/movies/movie-card";
 export default function Page(){
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
   <MovieCard
     id="1"
     title="O Último Horizonte"

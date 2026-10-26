@@ -8,6 +8,20 @@
       "when": 1792692800304,
       "tag": "0000_chilly_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793026294852,
+      "tag": "0001_smooth_callisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793037113940,
+      "tag": "0002_complete_mystique",
+      "breakpoints": true
     }
   ]
 }

@@ -65,7 +65,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/login");
+      router.push("/home");
       router.refresh();
     } catch {
       setFormError("Não foi possível concluir. Tente de novo.");

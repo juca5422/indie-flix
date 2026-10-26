@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Navbar from "@/components/global/navbar";
 import { auth } from "@/lib/auth";
 
+export const instant = false;
 export default async function AuthenticatedLayout({
   children,
 }: {
