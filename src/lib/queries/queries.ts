@@ -1,10 +1,12 @@
-
-import { and, desc, eq, ilike, or } from "drizzle-orm";
-
+import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "@/db";
-import { categories, favorites, movieCategories, movies } from "@/db/schema/catalog";
-
-
+import { user } from "@/db/schema/auth";
+import {
+  categories,
+  favorites,
+  movieCategories,
+  movies,
+} from "@/db/schema/catalog";
 
 /* ========== Pega os Favoritos de um usuário ========== */
 export async function getUserFavorites(userId: string) {
@@ -20,29 +22,16 @@ export async function getUserFavorites(userId: string) {
     })
     .from(favorites)
     .innerJoin(movies, eq(favorites.movieId, movies.id))
-    .where(
-      and(
-        eq(favorites.userId, userId),
-        eq(movies.status, "PUBLISHED"),
-      ),
-    )
+    .where(and(eq(favorites.userId, userId), eq(movies.status, "PUBLISHED")))
     .orderBy(favorites.createdAt);
 }
 
 /* ========== Verifica se um filme está favoritado por um usuário ========== */
-export async function isMovieFavorited(
-  userId: string,
-  movieId: string,
-) {
+export async function isMovieFavorited(userId: string, movieId: string) {
   const result = await db
     .select({ id: favorites.id })
     .from(favorites)
-    .where(
-      and(
-        eq(favorites.userId, userId),
-        eq(favorites.movieId, movieId),
-      ),
-    )
+    .where(and(eq(favorites.userId, userId), eq(favorites.movieId, movieId)))
     .limit(1);
 
   return result.length > 0;
@@ -60,119 +49,137 @@ export async function getFavoriteMovieIds(userId: string) {
 
 /* ========== Pega os filmes publicados ========== */
 export async function getMovies(search?: string) {
-    const filters = [eq(movies.status, "PUBLISHED")];
-  
-    if (search?.trim()) {
-      const term = `%${search.trim()}%`;
-  
-      filters.push(
-        or(
-          ilike(movies.title, term),
-          ilike(movies.synopsis, term),
-        )!,
-      );
-    }
-  
-    return db
-      .select()
-      .from(movies)
-      .where(and(...filters))
-      .orderBy(desc(movies.createdAt));
+  const filters = [eq(movies.status, "PUBLISHED")];
+
+  if (search?.trim()) {
+    const term = `%${search.trim()}%`;
+
+    filters.push(or(ilike(movies.title, term), ilike(movies.synopsis, term))!);
   }
 
-  /* ========== Pega um filme pelo ID ========== */
-  export async function getMovieById(movieId: string) {
-    const [movie] = await db
-      .select()
-      .from(movies)
-      .where(
-        and(
-          eq(movies.id, movieId),
-          eq(movies.status, "PUBLISHED"),
-        ),
-      )
-      .limit(1);
-  
-    return movie ?? null;
-  }
+  return db
+    .select()
+    .from(movies)
+    .where(and(...filters))
+    .orderBy(desc(movies.createdAt));
+}
 
-  /* ========== Pega os filmes de um criador ========== */
-  export async function getMoviesByCreator(creatorId: string) {
-    return db
-      .select()
-      .from(movies)
-      .where(eq(movies.creatorId, creatorId))
-      .orderBy(desc(movies.createdAt));
-  }
+/* ========== Pega um filme pelo ID ========== */
+export async function getMovieById(movieId: string) {
+  const [movie] = await db
+    .select()
+    .from(movies)
+    .where(and(eq(movies.id, movieId), eq(movies.status, "PUBLISHED")))
+    .limit(1);
 
-  /* ========== Pega os filmes para moderação ========== */
-  export async function getMoviesForModeration() {
-    return db
-      .select()
-      .from(movies)
-      .orderBy(desc(movies.createdAt));
-  }
+  return movie ?? null;
+}
 
-  /* ========== Banir um filme ========== */
-  export async function banMovie(
-    movieId: string,
-    reason: string,
-  ) {
-    const [movie] = await db
-      .update(movies)
-      .set({
-        status: "BANNED",
-        banReason: reason.trim(),
-      })
-      .where(
-        and(
-          eq(movies.id, movieId),
-          eq(movies.status, "PUBLISHED"),
-        ),
-      )
-      .returning();
-  
-    return movie ?? null;
-  }
+/* ========== Pega os filmes de um criador ========== */
+export async function getMoviesByCreator(creatorId: string) {
+  return db
+    .select()
+    .from(movies)
+    .where(eq(movies.creatorId, creatorId))
+    .orderBy(desc(movies.createdAt));
+}
 
-  /* ========== Reenviar um filme para revisão ========== */
-  export async function resubmitMovieForReview(
-    movieId: string,
-    creatorId: string,
-  ) {
-    const [movie] = await db
-      .update(movies)
-      .set({
-        status: "PENDING_REVIEW",
-        banReason: null,
-      })
-      .where(
-        and(
-          eq(movies.id, movieId),
-          eq(movies.creatorId, creatorId),
-          eq(movies.status, "BANNED"),
-        ),
-      )
-      .returning();
-  
-    return movie ?? null;
-  }
+/* ========== Pega os filmes para moderação ========== */
+export async function getMoviesForModeration() {
+  return db.select().from(movies).orderBy(desc(movies.createdAt));
+}
 
-  /* ========== Publicar um filme ========== */
-  export async function publishMovie(movieId: string) {
-    const [movie] = await db
-      .update(movies)
-      .set({
-        status: "PUBLISHED",
-        banReason: null,
-      })
-      .where(
-        and(
-          eq(movies.id, movieId),
-          eq(movies.status, "PENDING_REVIEW"),
-        ),
-      )
-      .returning();
-  
-    return movie ?? null;
-  }
+/* ========== Banir um filme ========== */
+export async function banMovie(movieId: string, reason: string) {
+  const [movie] = await db
+    .update(movies)
+    .set({
+      status: "BANNED",
+      banReason: reason.trim(),
+    })
+    .where(and(eq(movies.id, movieId), eq(movies.status, "PUBLISHED")))
+    .returning();
+
+  return movie ?? null;
+}
+
+/* ========== Reenviar um filme para revisão ========== */
+export async function resubmitMovieForReview(
+  movieId: string,
+  creatorId: string,
+) {
+  const [movie] = await db
+    .update(movies)
+    .set({
+      status: "PENDING_REVIEW",
+      banReason: null,
+    })
+    .where(
+      and(
+        eq(movies.id, movieId),
+        eq(movies.creatorId, creatorId),
+        eq(movies.status, "BANNED"),
+      ),
+    )
+    .returning();
+
+  return movie ?? null;
+}
+
+/* ========== Publicar um filme ========== */
+export async function publishMovie(movieId: string) {
+  const [movie] = await db
+    .update(movies)
+    .set({
+      status: "PUBLISHED",
+      banReason: null,
+    })
+    .where(and(eq(movies.id, movieId), eq(movies.status, "PENDING_REVIEW")))
+    .returning();
+
+  return movie ?? null;
+}
+
+/* ========== Lista os usuários ========== */
+export async function getUsers() {
+  return db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    })
+    .from(user)
+    .orderBy(desc(user.createdAt));
+}
+
+/* ========== Lista as categorias ========== */
+export async function getCategories() {
+  return db
+    .select()
+    .from(categories)
+    .orderBy(asc(categories.name));
+}
+
+/* ========== Pega uma categoria pelo ID ========== */
+export async function getCategoryById(id: string) {
+  const [category] = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.id, id))
+    .limit(1);
+
+  return category ?? null;
+}
+
+/* ========== Pega uma categoria pelo nome ========== */
+export async function getCategoryByName(name: string) {
+  const [category] = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.name, name))
+    .limit(1);
+
+  return category ?? null;
+}

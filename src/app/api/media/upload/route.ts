@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { localStorage } from "@/lib/storage/local-storage";
 import type { MediaType } from "@/lib/storage/storage";
 
-export const runtime = "nodejs";
+
 
 const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2 GB
 const MAX_THUMBNAIL_SIZE = 5 * 1024 * 1024; // 5 MB

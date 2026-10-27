@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     default: "IndieFlix",
     template: "%s · IndieFlix",
   },
-  description: "Catálogo de cinema independente.",
+  
 };
 
 export default function RootLayout({

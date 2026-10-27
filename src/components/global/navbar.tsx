@@ -2,34 +2,46 @@
 "use client";
 
 import {
-
   FilmSlateIcon,
   MagnifyingGlassIcon,
   SignOutIcon,
-
   UserCircleIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "Início", href: "/home" },
-  { label: "Filmes", href: "/filmes" },
-  { label: "Minha lista", href: "/meus-filmes" },
-];
+  {
+    label: "Filmmaker",
+    href: "/filmes",
+    roles: ["FILMMAKER", "ADMIN"],
+  },
+  {
+    label: "Admin",
+    href: "/admin/users",
+    roles: ["ADMIN"],
+  },
+] as const;
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
+  const role = session?.user?.role;
+
+  const visibleLinks = links.filter(
+    (link) => role && link.roles.includes(role as (typeof link.roles)[number]),
+  );
+
   async function handleSignOut() {
     const { error } = await authClient.signOut();
 
     if (error) {
-      console.error("Não foi possível sair da conta.");
+      console.error("Não foi possível sair da conta.", error);
       return;
     }
 
@@ -58,9 +70,9 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Navegação */}
+        {/* Navegação desktop */}
         <div className="hidden items-center gap-1 md:flex">
-          {links.map((link) => {
+          {visibleLinks.map((link) => {
             const active =
               pathname === link.href ||
               pathname.startsWith(`${link.href}/`);
@@ -121,30 +133,32 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Navegação compacta para telas pequenas */}
-      <div className="flex gap-1 overflow-x-auto border-t border-border px-3 py-2 md:hidden">
-        {links.map((link) => {
-          const active =
-            pathname === link.href ||
-            pathname.startsWith(`${link.href}/`);
+      {/* Navegação mobile */}
+      {visibleLinks.length > 0 && (
+        <div className="flex gap-1 overflow-x-auto border-t border-border px-3 py-2 md:hidden">
+          {visibleLinks.map((link) => {
+            const active =
+              pathname === link.href ||
+              pathname.startsWith(`${link.href}/`);
 
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "shrink-0 rounded-lg px-3 py-2 text-sm transition-colors",
-                active
-                  ? "bg-primary/10 font-semibold text-primary"
-                  : "text-muted hover:bg-elevated hover:text-text",
-              )}
-            >
-              {link.label}
-            </Link>
-          );
-        })}
-      </div>
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "shrink-0 rounded-lg px-3 py-2 text-sm transition-colors",
+                  active
+                    ? "bg-primary/10 font-semibold text-primary"
+                    : "text-muted hover:bg-elevated hover:text-text",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 }
