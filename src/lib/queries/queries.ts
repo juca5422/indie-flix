@@ -78,7 +78,17 @@ export async function getMovieById(movieId: string) {
 /* ========== Pega os filmes de um criador ========== */
 export async function getMoviesByCreator(creatorId: string) {
   return db
-    .select()
+    .select({
+      id: movies.id,
+      title: movies.title,
+      synopsis: movies.synopsis,
+      thumbnailUrl: movies.thumbnailUrl,
+      status: movies.status,
+      banReason: movies.banReason,
+      ageRating: movies.ageRating,
+      createdAt: movies.createdAt,
+      updatedAt: movies.updatedAt,
+    })
     .from(movies)
     .where(eq(movies.creatorId, creatorId))
     .orderBy(desc(movies.createdAt));
@@ -156,10 +166,7 @@ export async function getUsers() {
 
 /* ========== Lista as categorias ========== */
 export async function getCategories() {
-  return db
-    .select()
-    .from(categories)
-    .orderBy(asc(categories.name));
+  return db.select().from(categories).orderBy(asc(categories.name));
 }
 
 /* ========== Pega uma categoria pelo ID ========== */

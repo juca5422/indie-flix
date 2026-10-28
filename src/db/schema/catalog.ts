@@ -25,7 +25,11 @@ export const ageRatingEnum = pgEnum("age_rating", [
   "18",
 ]);
 
-export const movieStatusEnum = pgEnum("movie_status", ["PENDING_REVIEW", "PUBLISHED","BANNED"]);
+export const movieStatusEnum = pgEnum("movie_status", [
+  "PENDING_REVIEW",
+  "PUBLISHED",
+  "BANNED",
+]);
 
 /* ========== Categorias (lista gerida pelo ADM) ========== */
 
@@ -112,7 +116,7 @@ export const ratings = pgTable(
   (t) => [
     // RF03.3: uma avaliação por usuário e filme (use upsert para atualizar)
     unique("ratings_user_movie_unique").on(t.userId, t.movieId),
-   // Escala armazenada de 1 a 10; equivale a notas de 0,5 a 5,0
+    // Escala armazenada de 1 a 10; equivale a notas de 0,5 a 5,0
     check("ratings_score_range", sql`${t.score} BETWEEN 1 AND 10`),
   ],
 );

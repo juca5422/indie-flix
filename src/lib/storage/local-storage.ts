@@ -52,10 +52,7 @@ class LocalStorage implements StorageService {
         file.stream() as import("node:stream/web").ReadableStream,
       );
 
-      await pipeline(
-        stream,
-        createWriteStream(absolutePath, { flags: "wx" }),
-      );
+      await pipeline(stream, createWriteStream(absolutePath, { flags: "wx" }));
 
       return key;
     } catch (error) {
@@ -66,21 +63,21 @@ class LocalStorage implements StorageService {
 
   getAbsolutePath(key: string): string {
     const match =
-      /^(videos|thumbnails)\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.(mp4|jpg|png|webp)$/i.exec(key);
-  
+      /^(videos|thumbnails)\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.(mp4|jpg|png|webp)$/i.exec(
+        key,
+      );
+
     if (!match) {
       throw new Error("Referência de mídia inválida.");
     }
-  
+
     const [, type, filename, extension] = match;
-    const allowedExtensions = Object.values(
-      MIME_EXTENSIONS[type as MediaType],
-    );
-  
+    const allowedExtensions = Object.values(MIME_EXTENSIONS[type as MediaType]);
+
     if (!allowedExtensions.includes(`.${extension.toLowerCase()}`)) {
       throw new Error("Extensão inválida para o tipo de mídia.");
     }
-  
+
     return path.join(this.root, type, `${filename}.${extension}`);
   }
 

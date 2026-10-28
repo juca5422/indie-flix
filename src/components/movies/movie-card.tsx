@@ -1,4 +1,9 @@
-import {  InfoIcon, PlayIcon, StarIcon, UserCircleIcon } from "@phosphor-icons/react";
+import {
+  InfoIcon,
+  PlayIcon,
+  StarIcon,
+  UserCircleIcon,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,9 +80,7 @@ export function MovieCard({
             <span className="truncate text-sm text-muted">{creatorName}</span>
           </div>
 
-          <div
-            className="flex shrink-0 items-center gap-1.5"
-          >
+          <div className="flex shrink-0 items-center gap-1.5">
             <StarIcon size={17} weight="fill" className="text-star" />
 
             <span className="text-sm font-semibold text-text">
