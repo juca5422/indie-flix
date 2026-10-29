@@ -3,10 +3,10 @@
 import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
 import { db } from "@/db";
 import { categories, movieCategories } from "@/db/schema/catalog";
 import { requireAdmin } from "@/lib/permissions";
+import { getCategories } from "@/lib/queries/queries";
 
 const createCategorySchema = z.object({
   name: z
@@ -220,4 +220,8 @@ export async function updateCategory(
       message: "Não foi possível atualizar a categoria.",
     };
   }
+}
+
+export async function listCategories() {
+  return getCategories();
 }

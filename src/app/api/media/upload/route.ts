@@ -2,10 +2,9 @@ import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { ROLES } from "@/lib/permissions";
 import { localStorage } from "@/lib/storage/local-storage";
 import type { MediaType } from "@/lib/storage/storage";
-
-
 
 const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024; // 2 GB
 const MAX_THUMBNAIL_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -31,6 +30,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Você precisa estar autenticado para enviar arquivos." },
         { status: 401 },
+      );
+    }
+    if (
+      session.user.role !== ROLES.FILMMAKER &&
+      session.user.role !== ROLES.ADMIN
+    ) {
+      return NextResponse.json(
+        { error: "Você não tem permissão para enviar arquivos." },
+        { status: 403 },
       );
     }
 

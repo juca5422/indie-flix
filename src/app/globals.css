@@ -8,6 +8,10 @@
   --color-elevated: #202a3f;
   --color-border: #2b3650;
 
+  /* Popovers e menus */
+  --color-popover: #171e2e;
+  --color-popover-foreground: #e6eaf2;
+
   /* Texto */
   --color-text: #e6eaf2;
   --color-muted: #97a3b8;
@@ -25,7 +29,7 @@
 
   /* Tipografia */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-indieflix: var(--font-indieflix), ;
+  --font-indieflix: var(--font-indieflix),;
 
   /* Raios */
   --radius-card: 0.875rem;

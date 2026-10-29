@@ -1,3 +1,4 @@
+"use client";
 import {
   InfoIcon,
   PlayIcon,
@@ -5,11 +6,12 @@ import {
   UserCircleIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { MovieStatusBanner } from "@/components/movies/movie-status-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import { Card, CardContent } from "@/components/ui/card";
 
+type MovieStatus = "PENDING_REVIEW" | "PUBLISHED" | "BANNED";
 interface MovieCardProps {
   id: string;
   title: string;
@@ -17,8 +19,12 @@ interface MovieCardProps {
   category: string;
   creatorName: string;
   averageRating: number | null;
-  ratingsCount: number;
+  ratingsCount: number | null;
   synopsis: string;
+
+  status?: MovieStatus;
+  banReason?: string | null;
+  showStatus?: boolean;
 }
 
 export function MovieCard({
@@ -30,9 +36,16 @@ export function MovieCard({
   averageRating,
   ratingsCount,
   synopsis,
+  status,
+  banReason,
+  showStatus = false,
 }: MovieCardProps) {
   return (
     <Card className="group gap-0 overflow-hidden border-border bg-surface py-0 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-black/20">
+      {showStatus && status && (
+        <MovieStatusBanner status={status} banReason={banReason} />
+      )}
+
       {/* Thumbnail */}
       <Link
         href={`/filmes/${id}`}
@@ -44,7 +57,7 @@ export function MovieCard({
           aria-label={`Capa de ${title}`}
           className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
           style={{
-            backgroundImage: `url("${thumbnailUrl}")`,
+            backgroundImage: `url("/api/media/${thumbnailUrl}")`,
           }}
         />
 

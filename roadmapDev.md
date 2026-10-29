@@ -215,3 +215,25 @@ Não comece por estas funcionalidades. Primeiro, entregue o MVP obrigatório.
 - [-] Tema claro/escuro adicional.
 - [-] Player customizado ou HLS avançado.
 - [-] Funcionalidades sociais extras.
+
+
+RF01 - ok
+RF02
+
+
+login ok 
+cadastro de user ok
+navbar + layout ok
+alterar permissoes ok
+adicionar categorias ok
+remover categorias - ok 28/10
+editar categorias - ok 28/10
+cadastrar filmes - 
+banir filmes - 
+desbanir filmes - 
+pagina inicial com filmes por categoria - 
+criar page da categoria - 
+mostrar para avaliar no player do video
+fazer avaliações - 
+mostar se ja foi avaliado ou não  - 
+

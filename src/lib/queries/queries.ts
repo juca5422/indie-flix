@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import {
@@ -6,6 +6,7 @@ import {
   favorites,
   movieCategories,
   movies,
+  ratings,
 } from "@/db/schema/catalog";
 
 /* ========== Pega os Favoritos de um usuário ========== */
@@ -24,6 +25,43 @@ export async function getUserFavorites(userId: string) {
     .innerJoin(movies, eq(favorites.movieId, movies.id))
     .where(and(eq(favorites.userId, userId), eq(movies.status, "PUBLISHED")))
     .orderBy(favorites.createdAt);
+}
+
+/* ========== Cadastra filme e associa categorias ========== */
+export async function insertMovieWithCategories(data: {
+  title: string;
+  synopsis: string;
+  videoUrl: string;
+  thumbnailUrl: string;
+  creatorId: string;
+  ageRating: "L" | "10" | "12" | "14" | "16" | "18";
+  categoryIds: string[];
+}) {
+  return db.transaction(async (tx) => {
+    const [movie] = await tx
+      .insert(movies)
+      .values({
+        title: data.title,
+        synopsis: data.synopsis,
+        videoUrl: data.videoUrl,
+        thumbnailUrl: data.thumbnailUrl,
+        creatorId: data.creatorId,
+        ageRating: data.ageRating,
+        status: " ",
+      })
+      .returning();
+
+    if (data.categoryIds.length > 0) {
+      await tx.insert(movieCategories).values(
+        data.categoryIds.map((categoryId) => ({
+          movieId: movie.id,
+          categoryId,
+        })),
+      );
+    }
+
+    return movie;
+  });
 }
 
 /* ========== Verifica se um filme está favoritado por um usuário ========== */
@@ -77,19 +115,49 @@ export async function getMovieById(movieId: string) {
 
 /* ========== Pega os filmes de um criador ========== */
 export async function getMoviesByCreator(creatorId: string) {
+  const averageRatings = db
+    .select({
+      movieId: ratings.movieId,
+      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
+    })
+    .from(ratings)
+    .groupBy(ratings.movieId)
+    .as("average_ratings");
+
+  const movieCategoryNames = db
+    .select({
+      movieId: movieCategories.movieId,
+      category:
+        sql<string>`string_agg(${categories.name}, ', ' ORDER BY ${categories.name})`.as(
+          "category",
+        ),
+    })
+    .from(movieCategories)
+    .innerJoin(categories, eq(movieCategories.categoryId, categories.id))
+    .groupBy(movieCategories.movieId)
+    .as("movie_category_names");
+
   return db
     .select({
       id: movies.id,
       title: movies.title,
       synopsis: movies.synopsis,
+      videoUrl: movies.videoUrl,
       thumbnailUrl: movies.thumbnailUrl,
       status: movies.status,
       banReason: movies.banReason,
       ageRating: movies.ageRating,
+      creatorId: movies.creatorId,
       createdAt: movies.createdAt,
       updatedAt: movies.updatedAt,
+      category: sql<string>`coalesce(${movieCategoryNames.category}, '')`,
+      averageRating: sql<number | null>`${averageRatings.averageRating}`,
+      ratingsCount: sql<number>`coalesce(${averageRatings.ratingsCount}, 0)`,
     })
     .from(movies)
+    .leftJoin(movieCategoryNames, eq(movieCategoryNames.movieId, movies.id))
+    .leftJoin(averageRatings, eq(averageRatings.movieId, movies.id))
     .where(eq(movies.creatorId, creatorId))
     .orderBy(desc(movies.createdAt));
 }
@@ -166,7 +234,13 @@ export async function getUsers() {
 
 /* ========== Lista as categorias ========== */
 export async function getCategories() {
-  return db.select().from(categories).orderBy(asc(categories.name));
+  return db
+    .select({
+      id: categories.id,
+      name: categories.name,
+    })
+    .from(categories)
+    .orderBy(asc(categories.name));
 }
 
 /* ========== Pega uma categoria pelo ID ========== */

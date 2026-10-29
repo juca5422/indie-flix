@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -16,7 +15,7 @@ import { cn } from "@/lib/utils";
 const links = [
   {
     label: "Filmmaker",
-    href: "/filmes",
+    href: "/filmmaker",
     roles: ["FILMMAKER", "ADMIN"],
   },
   {
@@ -74,8 +73,7 @@ export default function Navbar() {
         <div className="hidden items-center gap-1 md:flex">
           {visibleLinks.map((link) => {
             const active =
-              pathname === link.href ||
-              pathname.startsWith(`${link.href}/`);
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
 
             return (
               <Link
@@ -115,7 +113,7 @@ export default function Navbar() {
               <p className="truncate text-sm font-medium text-text">
                 {isPending
                   ? "Carregando..."
-                  : session?.user.name ?? "Usuário"}
+                  : (session?.user.name ?? "Usuário")}
               </p>
               <p className="text-xs text-muted">Minha conta</p>
             </div>
@@ -138,8 +136,7 @@ export default function Navbar() {
         <div className="flex gap-1 overflow-x-auto border-t border-border px-3 py-2 md:hidden">
           {visibleLinks.map((link) => {
             const active =
-              pathname === link.href ||
-              pathname.startsWith(`${link.href}/`);
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
 
             return (
               <Link

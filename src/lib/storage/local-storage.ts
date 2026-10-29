@@ -78,7 +78,7 @@ class LocalStorage implements StorageService {
       throw new Error("Extensão inválida para o tipo de mídia.");
     }
 
-    return path.join(this.root, type, `${filename}.${extension}`);
+    return path.join(this.root, type, `${filename}.${extension.toLowerCase()}`);
   }
 
   async delete(key: string): Promise<void> {
