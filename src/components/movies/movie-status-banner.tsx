@@ -51,7 +51,10 @@ export function MovieStatusBanner({
   const [dialogOpen, setDialogOpen] = useState(false);
   const config = STATUS_CONFIG[status];
   const isBanned = status === "BANNED";
-
+  const description =
+    status === "BANNED"
+      ? `Motivo do banimento: ${banReason?.trim() || "Motivo não informado."}`
+      : config.description;
   return (
     <>
       <TooltipProvider>
@@ -78,8 +81,8 @@ export function MovieStatusBanner({
             </button>
           </TooltipTrigger>
 
-          <TooltipContent>
-            <p>{config.description}</p>
+          <TooltipContent className="border border-border bg-elevated text-text shadow-lg">
+            <p>{description}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

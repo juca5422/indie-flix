@@ -27,6 +27,59 @@ export async function getUserFavorites(userId: string) {
     .orderBy(favorites.createdAt);
 }
 
+/* ========== Atualiza filme e associa categorias ========== */
+export async function updateMovieWithCategories(data: {
+  movieId: string;
+  creatorId: string;
+  title: string;
+  synopsis: string;
+  videoUrl: string;
+  thumbnailUrl: string;
+  ageRating: "L" | "10" | "12" | "14" | "16" | "18";
+  categoryIds: string[];
+}) {
+  return db.transaction(async (tx) => {
+    const [movie] = await tx
+      .update(movies)
+      .set({
+        title: data.title,
+        synopsis: data.synopsis,
+        videoUrl: data.videoUrl,
+        thumbnailUrl: data.thumbnailUrl,
+        ageRating: data.ageRating,
+        status: "PENDING_REVIEW",
+        banReason: null,
+      })
+      .where(
+        and(
+          eq(movies.id, data.movieId),
+          eq(movies.creatorId, data.creatorId),
+          eq(movies.status, "BANNED"),
+        ),
+      )
+      .returning({ id: movies.id });
+
+    if (!movie) {
+      return null;
+    }
+
+    await tx
+      .delete(movieCategories)
+      .where(eq(movieCategories.movieId, movie.id));
+
+    if (data.categoryIds.length > 0) {
+      await tx.insert(movieCategories).values(
+        data.categoryIds.map((categoryId) => ({
+          movieId: movie.id,
+          categoryId,
+        })),
+      );
+    }
+
+    return movie;
+  });
+}
+
 /* ========== Cadastra filme e associa categorias ========== */
 export async function insertMovieWithCategories(data: {
   title: string;
@@ -47,7 +100,7 @@ export async function insertMovieWithCategories(data: {
         thumbnailUrl: data.thumbnailUrl,
         creatorId: data.creatorId,
         ageRating: data.ageRating,
-        status: " ",
+        status: "PUBLISHED",
       })
       .returning();
 
@@ -128,10 +181,20 @@ export async function getMoviesByCreator(creatorId: string) {
   const movieCategoryNames = db
     .select({
       movieId: movieCategories.movieId,
-      category:
-        sql<string>`string_agg(${categories.name}, ', ' ORDER BY ${categories.name})`.as(
-          "category",
-        ),
+
+      category: sql<string>`
+        string_agg(
+          ${categories.name},
+          ', ' ORDER BY ${categories.name}
+        )
+      `.as("category"),
+
+      categoryIds: sql<string[]>`
+        array_agg(
+          ${movieCategories.categoryId}
+          ORDER BY ${categories.name}
+        )
+      `.as("category_ids"),
     })
     .from(movieCategories)
     .innerJoin(categories, eq(movieCategories.categoryId, categories.id))
@@ -153,6 +216,7 @@ export async function getMoviesByCreator(creatorId: string) {
       updatedAt: movies.updatedAt,
       category: sql<string>`coalesce(${movieCategoryNames.category}, '')`,
       averageRating: sql<number | null>`${averageRatings.averageRating}`,
+      categoryIds: movieCategoryNames.categoryIds,
       ratingsCount: sql<number>`coalesce(${averageRatings.ratingsCount}, 0)`,
     })
     .from(movies)

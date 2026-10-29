@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/db";
+import { ROLES } from "@/lib/roles";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
@@ -12,11 +13,12 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
-        required: false,
-        defaultValue: "USER",
-        input: false, // a pessoa não escolhe o próprio papel no cadastro
+        required: true,
+        defaultValue: ROLES.USER,
+        input: false,
       },
     },
   },
+
   plugins: [nextCookies()],
 });

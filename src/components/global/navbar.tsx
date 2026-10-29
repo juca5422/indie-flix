@@ -8,32 +8,38 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-
 import { authClient } from "@/lib/auth-client";
+import type { UserRole } from "@/lib/roles";
+import { ROLES, userRoleSchema } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
-const links = [
+const links: {
+  label: string;
+  href: string;
+  roles: readonly UserRole[];
+}[] = [
   {
     label: "Filmmaker",
     href: "/filmmaker",
-    roles: ["FILMMAKER", "ADMIN"],
+    roles: [ROLES.FILMMAKER, ROLES.ADMIN],
   },
   {
     label: "Admin",
     href: "/admin/users",
-    roles: ["ADMIN"],
+    roles: [ROLES.ADMIN],
   },
-] as const;
+];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  const role = session?.user?.role;
+  const parsedRole = userRoleSchema.safeParse(session?.user?.role);
+  const role = parsedRole.success ? parsedRole.data : undefined;
 
   const visibleLinks = links.filter(
-    (link) => role && link.roles.includes(role as (typeof link.roles)[number]),
+    (link) => role !== undefined && link.roles.includes(role),
   );
 
   async function handleSignOut() {

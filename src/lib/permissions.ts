@@ -1,16 +1,10 @@
-
 import { headers } from "next/headers";
-import { forbidden, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { ROLES, type UserRole } from "@/lib/roles";
 
-export const ROLES = {
-  USER: "USER",
-  FILMMAKER: "FILMMAKER",
-  ADMIN: "ADMIN",
-} as const;
-
-export type UserRole = (typeof ROLES)[keyof typeof ROLES];
+export { ROLES, type UserRole } from "@/lib/roles";
 
 export async function requireSession() {
   const session = await auth.api.getSession({
@@ -26,13 +20,9 @@ export async function requireSession() {
 
 export async function requireRole(allowedRoles: UserRole[]) {
   const session = await requireSession();
-
   const role = session.user.role;
 
-  if (
-    typeof role !== "string" ||
-    !allowedRoles.includes(role as UserRole)
-  ) {
+  if (typeof role !== "string" || !allowedRoles.includes(role as UserRole)) {
     redirect("/forbidden");
   }
 

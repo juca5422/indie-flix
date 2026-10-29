@@ -1,13 +1,12 @@
 import { AddMovieDialog } from "@/components/filmmaker/add-movie-dialog";
 import { MovieCard } from "@/components/movies/movie-card";
-import { ROLES, requireRole } from "@/lib/permissions";
+import { ROLES, requireRole, type UserRole } from "@/lib/permissions";
 import { getMoviesByCreator } from "@/lib/queries/queries";
 
 export default async function FilmmakerPage() {
   const session = await requireRole([ROLES.FILMMAKER, ROLES.ADMIN]);
 
   const myMovies = await getMoviesByCreator(session.user.id);
-  console.log(myMovies);
 
   return (
     <main className="space-y-6 p-6">
@@ -31,12 +30,16 @@ export default async function FilmmakerPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {myMovies.map((movie) => (
             <MovieCard
+              role={session.user.role as UserRole}
+              context="FILMMAKER"
+              isOwner={true}
               key={movie.id}
               id={movie.id}
               title={movie.title}
               synopsis={movie.synopsis}
               thumbnailUrl={movie.thumbnailUrl}
               category={movie.category}
+              categoryIds={movie.categoryIds ?? []}
               creatorName={session.user.name}
               averageRating={
                 movie.averageRating === null
@@ -47,6 +50,15 @@ export default async function FilmmakerPage() {
               status={movie.status}
               banReason={movie.banReason}
               showStatus
+              editableMovie={{
+                id: movie.id,
+                title: movie.title,
+                synopsis: movie.synopsis,
+                ageRating: movie.ageRating,
+                categoryIds: movie.categoryIds ?? [],
+                videoUrl: movie.videoUrl,
+                thumbnailUrl: movie.thumbnailUrl,
+              }}
             />
           ))}
         </div>
