@@ -384,3 +384,68 @@ export async function getCategoryByName(name: string) {
 
   return category ?? null;
 }
+
+/* ========== Categorias que possuem filme publicado ========== */
+export async function getCategoriesWithPublishedMovies() {
+  return db
+    .select({
+      id: categories.id,
+      name: categories.name,
+    })
+    .from(categories)
+    .innerJoin(movieCategories, eq(movieCategories.categoryId, categories.id))
+    .innerJoin(movies, eq(movies.id, movieCategories.movieId))
+    .where(eq(movies.status, "PUBLISHED"))
+    .groupBy(categories.id, categories.name)
+    .orderBy(asc(categories.name));
+}
+
+/* ========== Filmes publicados para o catálogo ========== */
+export async function getCatalogMovies() {
+  const averageRatings = db
+    .select({
+      movieId: ratings.movieId,
+      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
+    })
+    .from(ratings)
+    .groupBy(ratings.movieId)
+    .as("average_ratings");
+
+  const movieCategoryNames = db
+    .select({
+      movieId: movieCategories.movieId,
+      category: sql<string>`
+        string_agg(${categories.name}, ', ' ORDER BY ${categories.name})
+      `.as("category"),
+      categoryIds: sql<string[]>`
+        array_agg(${movieCategories.categoryId} ORDER BY ${categories.name})
+      `.as("category_ids"),
+    })
+    .from(movieCategories)
+    .innerJoin(categories, eq(movieCategories.categoryId, categories.id))
+    .groupBy(movieCategories.movieId)
+    .as("movie_category_names");
+
+  return db
+    .select({
+      id: movies.id,
+      title: movies.title,
+      synopsis: movies.synopsis,
+      thumbnailUrl: movies.thumbnailUrl,
+      status: movies.status,
+      banReason: movies.banReason,
+      creatorId: movies.creatorId,
+      creatorName: user.name,
+      category: sql<string>`coalesce(${movieCategoryNames.category}, '')`,
+      categoryIds: movieCategoryNames.categoryIds,
+      averageRating: sql<number | null>`${averageRatings.averageRating}`,
+      ratingsCount: sql<number>`coalesce(${averageRatings.ratingsCount}, 0)`,
+    })
+    .from(movies)
+    .innerJoin(user, eq(user.id, movies.creatorId))
+    .leftJoin(movieCategoryNames, eq(movieCategoryNames.movieId, movies.id))
+    .leftJoin(averageRatings, eq(averageRatings.movieId, movies.id))
+    .where(eq(movies.status, "PUBLISHED"))
+    .orderBy(desc(movies.createdAt));
+}
