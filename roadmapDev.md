@@ -228,9 +228,11 @@ alterar permissoes ok
 adicionar categorias ok
 remover categorias - ok 28/10
 editar categorias - ok 28/10
-cadastrar filmes - 
+cadastrar filmes - ok
 banir filmes - 
 desbanir filmes - 
+pagina admin todos os filmes - 
+pagina admin filmes pendentes
 pagina inicial com filmes por categoria - 
 criar page da categoria - 
 mostrar para avaliar no player do video

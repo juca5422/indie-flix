@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { banMovieAction } from "@/lib/actions/movies";
+import { banMovieAction, publishMovieAction } from "@/lib/actions/movies";
 import {
   getMovieActions,
   type MovieContext,
@@ -184,7 +184,11 @@ export function MovieCard({
                   )}
 
                   {canPublishMovie && (
-                    <DropdownMenuItem disabled>
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        void publishMovieAction(id);
+                      }}
+                    >
                       <PlayIcon size={18} />
                       Publicar filme
                     </DropdownMenuItem>

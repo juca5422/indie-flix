@@ -7,6 +7,7 @@ import { ROLES, requireRole } from "@/lib/permissions";
 import {
   banMovie as banMovieQuery,
   insertMovieWithCategories,
+  publishMovie as publishMovieQuery,
   resubmitMovieForReview,
   updateMovieWithCategories,
 } from "@/lib/queries/queries";
@@ -229,6 +230,49 @@ export async function updateMovie(input: unknown): Promise<MovieActionResult> {
     return {
       success: false,
       message: "Não foi possível editar o filme.",
+    };
+  }
+}
+export async function publishMovieAction(
+  movieId: unknown,
+): Promise<MovieActionResult> {
+  await requireRole([ROLES.ADMIN]);
+
+  const validation = movieIdSchema.safeParse(movieId);
+
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "ID do filme inválido.",
+    };
+  }
+
+  try {
+    const movie = await publishMovieQuery(validation.data);
+
+    if (!movie) {
+      return {
+        success: false,
+        message:
+          "Não foi possível publicar o filme. Ele pode não existir ou não estar banido.",
+      };
+    }
+
+    revalidatePath("/admin/movies");
+    revalidatePath("/filmmaker");
+    revalidatePath("/");
+    revalidatePath("/filmes");
+
+    return {
+      success: true,
+      message: "Filme publicado com sucesso.",
+    };
+  } catch (error) {
+    console.error("Erro ao publicar filme:", error);
+
+    return {
+      success: false,
+      message: "Não foi possível publicar o filme.",
     };
   }
 }

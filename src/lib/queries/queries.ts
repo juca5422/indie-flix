@@ -228,7 +228,59 @@ export async function getMoviesByCreator(creatorId: string) {
 
 /* ========== Pega os filmes para moderação ========== */
 export async function getMoviesForModeration() {
-  return db.select().from(movies).orderBy(desc(movies.createdAt));
+  const averageRatings = db
+    .select({
+      movieId: ratings.movieId,
+      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
+    })
+    .from(ratings)
+    .groupBy(ratings.movieId)
+    .as("average_ratings");
+  const movieCategoryNames = db
+    .select({
+      movieId: movieCategories.movieId,
+      category: sql<string>`
+        string_agg(
+          ${categories.name},
+          ', ' ORDER BY ${categories.name}
+        )
+      `.as("category"),
+      categoryIds: sql<string[]>`
+        array_agg(
+          ${movieCategories.categoryId}
+          ORDER BY ${categories.name}
+        )
+      `.as("category_ids"),
+    })
+    .from(movieCategories)
+    .innerJoin(categories, eq(movieCategories.categoryId, categories.id))
+    .groupBy(movieCategories.movieId)
+    .as("movie_category_names");
+  return db
+    .select({
+      id: movies.id,
+      title: movies.title,
+      synopsis: movies.synopsis,
+      videoUrl: movies.videoUrl,
+      thumbnailUrl: movies.thumbnailUrl,
+      status: movies.status,
+      banReason: movies.banReason,
+      ageRating: movies.ageRating,
+      creatorId: movies.creatorId,
+      creatorName: user.name,
+      createdAt: movies.createdAt,
+      updatedAt: movies.updatedAt,
+      category: sql<string>`coalesce(${movieCategoryNames.category}, '')`,
+      categoryIds: movieCategoryNames.categoryIds,
+      averageRating: sql<number | null>`${averageRatings.averageRating}`,
+      ratingsCount: sql<number>`coalesce(${averageRatings.ratingsCount}, 0)`,
+    })
+    .from(movies)
+    .innerJoin(user, eq(user.id, movies.creatorId))
+    .leftJoin(movieCategoryNames, eq(movieCategoryNames.movieId, movies.id))
+    .leftJoin(averageRatings, eq(averageRatings.movieId, movies.id))
+    .orderBy(desc(movies.createdAt));
 }
 
 /* ========== Banir um filme ========== */
@@ -276,9 +328,13 @@ export async function publishMovie(movieId: string) {
       status: "PUBLISHED",
       banReason: null,
     })
-    .where(and(eq(movies.id, movieId), eq(movies.status, "PENDING_REVIEW")))
+    .where(
+      and(
+        eq(movies.id, movieId),
+        or(eq(movies.status, "BANNED"), eq(movies.status, "PENDING_REVIEW")),
+      ),
+    )
     .returning();
-
   return movie ?? null;
 }
 
