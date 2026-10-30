@@ -45,7 +45,7 @@ export function CategoryDeleteButton({ id, name }: CategoryDeleteButtonProps) {
         disabled={isPending}
         aria-label={`Excluir categoria ${name}`}
         title={`Excluir ${name}`}
-        className="text-destructive hover:bg-destructive/10"
+        className="text-danger hover:bg-danger/10"
       >
         <TrashIcon size={18} />
       </Button>
@@ -53,7 +53,7 @@ export function CategoryDeleteButton({ id, name }: CategoryDeleteButtonProps) {
       {message && (
         <span
           role="status"
-          className="max-w-64 text-right text-xs text-muted-foreground"
+          className="max-w-64 text-right text-xs text-muted"
         >
           {message}
         </span>

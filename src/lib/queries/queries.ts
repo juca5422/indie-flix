@@ -166,6 +166,25 @@ export async function getMovieById(movieId: string) {
   return movie ?? null;
 }
 
+/* ========== Avaliação deste usuário neste filme ========== */
+export async function getUserMovieRating(userId: string, movieId: string) {
+  const [rating] = await db
+    .select({
+      score: ratings.score,
+      comment: ratings.comment,
+    })
+    .from(ratings)
+    .where(and(eq(ratings.userId, userId), eq(ratings.movieId, movieId)))
+    .limit(1);
+
+  if (!rating) return null;
+
+  return {
+    score: rating.score / 2,
+    comment: rating.comment,
+  };
+}
+
 /* ========== Pega os filmes de um criador ========== */
 export async function getMoviesByCreator(creatorId: string) {
   const averageRatings = db

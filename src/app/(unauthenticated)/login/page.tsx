@@ -21,8 +21,6 @@ import { authClient } from "@/lib/auth-client";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { type LoginInput, loginSchema } from "@/schemas/auth";
 
-
-
 export default function LoginPage() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -85,7 +83,12 @@ export default function LoginPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="grid gap-4" noValidate onSubmit={onSubmit}>
+        <form
+          method="POST"
+          className="grid gap-4"
+          noValidate
+          onSubmit={onSubmit}
+        >
           {formError ? (
             <p
               role="alert"

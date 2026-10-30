@@ -13,7 +13,7 @@ export default async function FilmmakerPage() {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Meus vídeos</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted">
             Gerencie seus filmes e acompanhe a análise.
           </p>
         </div>
@@ -21,7 +21,7 @@ export default async function FilmmakerPage() {
         <AddMovieDialog />
       </header>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted">
         {myMovies.length}{" "}
         {myMovies.length === 1 ? "filme cadastrado" : "filmes cadastrados"}
       </p>

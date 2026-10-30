@@ -41,7 +41,7 @@ export default async function AdminMoviesPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Filmes</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-muted">
           {isReview
             ? "Filmes corrigidos que estão aguardando análise."
             : "Publicados e banidos. Os pendentes ficam na aba Revisão."}
@@ -63,7 +63,7 @@ export default async function AdminMoviesPage({
               "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
               tab.active
                 ? "bg-primary text-bg"
-                : "bg-muted text-muted-foreground hover:text-foreground",
+                : "bg-elevated text-muted hover:text-text",
             )}
           >
             {tab.label}
@@ -71,7 +71,7 @@ export default async function AdminMoviesPage({
               <span
                 className={cn(
                   "rounded-full px-2 py-0.5 text-xs",
-                  tab.active ? "bg-bg/15" : "bg-background",
+                  tab.active ? "bg-bg/15" : "bg-bg",
                 )}
               >
                 {tab.count}
@@ -109,7 +109,7 @@ export default async function AdminMoviesPage({
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-border p-8 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-border p-8 text-center text-sm text-muted">
           {isReview
             ? "Nenhum filme aguardando revisão."
             : "Nenhum filme publicado ou banido."}

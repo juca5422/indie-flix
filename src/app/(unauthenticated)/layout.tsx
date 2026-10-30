@@ -1,7 +1,21 @@
 import { FilmSlate } from "@phosphor-icons/react/ssr";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import { auth } from "@/lib/auth";
+export const instant = false;
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default async function AuthLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (session) {
+    redirect("/home");
+  }
   return (
     <div className="relative flex flex-1">
       <div

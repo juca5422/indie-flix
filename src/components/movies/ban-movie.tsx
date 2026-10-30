@@ -89,7 +89,7 @@ export function BanMovieDialog({
             required
           />
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted">
             Essa descrição será registrada para justificar a decisão.
           </p>
 

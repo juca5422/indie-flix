@@ -100,7 +100,7 @@ export function CategoryEditDialog({ id, name }: CategoryEditDialogProps) {
               role="status"
               aria-live="polite"
               className={
-                isSuccess ? "text-sm text-accent" : "text-sm text-destructive"
+                isSuccess ? "text-sm text-accent" : "text-sm text-danger"
               }
             >
               {message}

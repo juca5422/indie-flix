@@ -92,7 +92,7 @@ export function CategoryDialog() {
               role="status"
               aria-live="polite"
               className={
-                isSuccess ? "text-sm text-accent" : "text-sm text-destructive"
+                isSuccess ? "text-sm text-accent" : "text-sm text-danger"
               }
             >
               {message}

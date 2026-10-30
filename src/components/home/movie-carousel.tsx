@@ -32,7 +32,7 @@ export function MovieCarousel({
             type="button"
             onClick={() => scrollByPage("left")}
             aria-label={`Voltar em ${title}`}
-            className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+            className="flex size-9 items-center justify-center rounded-full border border-border text-muted hover:text-text"
           >
             <CaretLeftIcon size={18} />
           </button>
@@ -40,7 +40,7 @@ export function MovieCarousel({
             type="button"
             onClick={() => scrollByPage("right")}
             aria-label={`Avançar em ${title}`}
-            className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+            className="flex size-9 items-center justify-center rounded-full border border-border text-muted hover:text-text"
           >
             <CaretRightIcon size={18} />
           </button>

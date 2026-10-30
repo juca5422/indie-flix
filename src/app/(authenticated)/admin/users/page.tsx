@@ -21,14 +21,14 @@ export default async function AdminUsersPage() {
           Gerenciamento de usuários
         </h1>
 
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-muted">
           Consulte os usuários cadastrados e gerencie seus níveis de acesso.
         </p>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-left text-sm">
-          <thead className="bg-muted/50">
+          <thead className="bg-elevated/50">
             <tr>
               <th className="px-4 py-3 font-medium">Nome</th>
               <th className="px-4 py-3 font-medium">E-mail</th>
@@ -39,7 +39,7 @@ export default async function AdminUsersPage() {
 
           <tbody className="divide-y divide-border">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-muted/30">
+              <tr key={user.id} className="hover:bg-elevated/30">
                 <td className="whitespace-nowrap px-4 py-3">{user.name}</td>
 
                 <td className="px-4 py-3">{user.email}</td>
@@ -62,7 +62,7 @@ export default async function AdminUsersPage() {
               <tr>
                 <td
                   colSpan={4}
-                  className="px-4 py-8 text-center text-muted-foreground"
+                  className="px-4 py-8 text-center text-muted"
                 >
                   Nenhum usuário cadastrado.
                 </td>
@@ -72,7 +72,7 @@ export default async function AdminUsersPage() {
         </table>
       </div>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted">
         {users.length} usuário(s) cadastrado(s).
       </p>
     </section>

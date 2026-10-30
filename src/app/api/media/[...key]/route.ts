@@ -19,15 +19,30 @@ export async function GET(_request: Request, { params }: RouteContext) {
     const mediaKey = key.join("/");
 
     // Esta rota serve somente thumbnails.
+    const absolutePath = localStorage.getAbsolutePath(mediaKey);
+    const extension = path.extname(absolutePath).toLowerCase();
+    if (mediaKey.startsWith("videos/")) {
+      if (extension !== ".mp4") {
+        return NextResponse.json(
+          { error: "Formato de vídeo não permitido." },
+          { status: 400 },
+        );
+      }
+      const video = await readFile(absolutePath);
+      return new NextResponse(video, {
+        headers: {
+          "Content-Type": "video/mp4",
+          "Cache-Control": "private, max-age=3600",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
     if (!mediaKey.startsWith("thumbnails/")) {
       return NextResponse.json(
         { error: "Tipo de mídia não permitido." },
         { status: 403 },
       );
     }
-
-    const absolutePath = localStorage.getAbsolutePath(mediaKey);
-    const extension = path.extname(absolutePath).toLowerCase();
     const contentType = MIME_TYPES[extension];
 
     if (!contentType) {

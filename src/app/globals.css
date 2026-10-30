@@ -27,6 +27,15 @@
   --color-warning: #e5b567;
   --color-danger: #e57c7c;
 
+  /* Nomes que o shadcn usa, apontando para a paleta acima */
+  --color-background: #0f1420;
+  --color-foreground: #e6eaf2;
+  --color-card: #171e2e;
+  --color-card-foreground: #e6eaf2;
+  --color-muted-foreground: #97a3b8;
+  --color-destructive: #e57c7c;
+  --color-ring: #8b9cf7;
+
   /* Tipografia */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-indieflix: var(--font-indieflix),;

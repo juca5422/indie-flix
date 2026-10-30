@@ -15,7 +15,7 @@ export default async function AdminCategoriesPage() {
             Gerenciamento de categorias
           </h1>
 
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-muted">
             Cadastre e gerencie as categorias utilizadas para classificar os
             filmes do IndieFlix.
           </p>

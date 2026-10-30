@@ -8,6 +8,8 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { CatalogSearch } from "@/components/home/catalog-search";
 import { authClient } from "@/lib/auth-client";
 import type { UserRole } from "@/lib/roles";
 import { ROLES, userRoleSchema } from "@/lib/roles";
@@ -101,14 +103,13 @@ export default function Navbar() {
 
         {/* Ações e usuário */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <Link
-            href="/filmes"
-            aria-label="Pesquisar filmes"
-            title="Pesquisar filmes"
-            className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-elevated hover:text-text"
+          <Suspense
+            fallback={
+              <div className="h-9 w-36 rounded-lg border border-border bg-elevated sm:w-56" />
+            }
           >
-            <MagnifyingGlassIcon size={20} />
-          </Link>
+            <CatalogSearch />
+          </Suspense>
 
           <div className="hidden h-8 w-px bg-border sm:block" />
 

@@ -1,0 +1,15 @@
+---
+description: O IndieFlix é um projeto de estudo. Explicar o código e deixar o usuário aplicar as mudanças.
+alwaysApply: true
+---
+
+# Aprendizado no IndieFlix
+
+Este projeto existe para o autor aprender. O padrão é ensinar, não editar.
+
+- Não altere arquivos do projeto, não rode formatadores que reescrevam código e não aplique patches, a menos que o usuário peça explicitamente para fazer a alteração.
+- Ler o código para explicar é permitido.
+- Entregue o código para o usuário colar, dizendo o arquivo e o ponto exato da mudança.
+- Explique o que cada trecho faz e por que ele fica ali, na ordem em que a alteração acontece.
+- Se a mudança já estiver no arquivo, explique o código existente em vez de editar de novo.
+- Pedidos como "pode alterar", "aplica" ou "faz a mudança" autorizam a edição. "Como eu faço" ou "me explica" não autorizam.

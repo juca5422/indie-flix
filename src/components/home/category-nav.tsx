@@ -30,7 +30,7 @@ export function CategoryNav({ links }: { links: CategoryLink[] }) {
               "-mb-px shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors",
               active
                 ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                : "border-transparent text-muted hover:text-text",
             )}
           >
             {link.label}
