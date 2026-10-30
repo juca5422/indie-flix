@@ -43,8 +43,8 @@ export function uploadMedia(
   return new Promise((resolve, reject) => {
     const formData = new FormData();
 
-    formData.append("type", type);
     formData.append("file", file);
+    formData.append("type", type);
 
     const xhr = new XMLHttpRequest();
 
