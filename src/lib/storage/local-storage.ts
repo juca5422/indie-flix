@@ -37,7 +37,7 @@ class LocalStorage implements StorageService {
     }
 
     if (file.size === 0) {
-      throw new Error("Não é possível armazenar um arquivo vazio.");
+      throw new EmptyMediaError();
     }
 
     const directory = path.join(this.root, type);
@@ -53,6 +53,57 @@ class LocalStorage implements StorageService {
       );
 
       await pipeline(stream, createWriteStream(absolutePath, { flags: "wx" }));
+
+      return key;
+    } catch (error) {
+      await rm(absolutePath, { force: true });
+      throw error;
+    }
+  }
+
+  async saveStream(
+    source: Readable,
+    type: MediaType,
+    mimeType: string,
+    maxBytes: number,
+  ): Promise<string> {
+    const extension = MIME_EXTENSIONS[type][mimeType];
+
+    if (!extension) {
+      throw new Error(`Formato não permitido para ${type}: ${mimeType}`);
+    }
+
+    const directory = path.join(this.root, type);
+    const filename = `${randomUUID()}${extension}`;
+    const absolutePath = path.join(directory, filename);
+    const key = `${type}/${filename}`;
+
+    await mkdir(directory, { recursive: true });
+
+    let bytes = 0;
+    const limited = new Transform({
+      transform(chunk, _encoding, callback) {
+        bytes += chunk.length;
+
+        if (bytes > maxBytes) {
+          callback(new MediaTooLargeError());
+          return;
+        }
+
+        callback(null, chunk);
+      },
+    });
+
+    try {
+      await pipeline(
+        source,
+        limited,
+        createWriteStream(absolutePath, { flags: "wx" }),
+      );
+
+      if (bytes === 0) {
+        throw new EmptyMediaError();
+      }
 
       return key;
     } catch (error) {
@@ -85,6 +136,14 @@ class LocalStorage implements StorageService {
     await rm(this.getAbsolutePath(key), { force: true });
   }
 }
+
+export class EmptyMediaError extends Error {
+  constructor() {
+    super("Não é possível armazenar um arquivo vazio.");
+    this.name = "EmptyMediaError";
+  }
+}
+
 export class MediaTooLargeError extends Error {
   constructor() {
     super("O arquivo ultrapassa o limite.");

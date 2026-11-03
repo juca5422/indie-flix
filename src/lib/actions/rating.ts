@@ -1,10 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/db";
-import { ratings } from "@/db/schema/catalog";
+import { z } from "zod";
 import { requireSession } from "@/lib/permissions";
-import { getMovieById } from "@/lib/queries/queries";
+import {
+  getMovieById,
+  getMovieComments,
+  upsertUserMovieRating,
+} from "@/lib/queries/queries";
 import { ratingSchema } from "@/schemas/schema";
 
 type SaveRatingResult = {
@@ -26,7 +29,6 @@ export async function saveRating(input: unknown): Promise<SaveRatingResult> {
 
   const { movieId, score } = validation.data;
   const comment = validation.data.comment ? validation.data.comment : null;
-  const storedScore = Math.round(score * 2);
 
   try {
     const movie = await getMovieById(movieId);
@@ -38,22 +40,12 @@ export async function saveRating(input: unknown): Promise<SaveRatingResult> {
       };
     }
 
-    await db
-      .insert(ratings)
-      .values({
-        movieId,
-        userId: session.user.id,
-        score: storedScore,
-        comment,
-      })
-      .onConflictDoUpdate({
-        target: [ratings.userId, ratings.movieId],
-        set: {
-          score: storedScore,
-          comment,
-          updatedAt: new Date(),
-        },
-      });
+    await upsertUserMovieRating({
+      userId: session.user.id,
+      movieId,
+      score,
+      comment,
+    });
 
     revalidatePath(`/filmes/${movieId}`);
     revalidatePath("/home", "layout");
@@ -72,4 +64,18 @@ export async function saveRating(input: unknown): Promise<SaveRatingResult> {
       message: "Não foi possível salvar a avaliação.",
     };
   }
+}
+
+const movieIdSchema = z.uuid();
+
+export async function listMovieComments(movieId: unknown) {
+  await requireSession();
+
+  const validation = movieIdSchema.safeParse(movieId);
+
+  if (!validation.success) {
+    return [];
+  }
+
+  return getMovieComments(validation.data);
 }

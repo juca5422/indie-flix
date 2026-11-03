@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { saveRating } from "@/lib/actions/ratings";
+import { saveRating } from "@/lib/actions/rating";
 
 export type MovieRatingValue = {
   score: number;

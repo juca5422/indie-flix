@@ -17,6 +17,12 @@ type MoviePolicyInput = {
   isOwner: boolean;
 };
 
+type WatchPolicyInput = {
+  role: UserRole;
+  status: MovieStatus;
+  isOwner: boolean;
+};
+
 export function getMovieActions({
   role,
   context,
@@ -53,4 +59,15 @@ export function getMovieActions({
   }
 
   return [];
+}
+
+export function canWatchMovie({ role, status, isOwner }: WatchPolicyInput) {
+  if (status === "PUBLISHED") {
+    return true;
+  }
+  if (status === "PENDING_REVIEW" || status === "BANNED") {
+    if (role === ROLES.ADMIN) return true;
+    return role === ROLES.FILMMAKER && isOwner;
+  }
+  return false;
 }

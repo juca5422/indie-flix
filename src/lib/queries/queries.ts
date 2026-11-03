@@ -166,6 +166,55 @@ export async function getMovieById(movieId: string) {
   return movie ?? null;
 }
 
+/* ========== Filme dono desta chave de vídeo ou thumbnail ========== */
+export async function getMovieByMediaKey(mediaKey: string) {
+  const [movie] = await db
+    .select({
+      id: movies.id,
+      status: movies.status,
+      creatorId: movies.creatorId,
+    })
+    .from(movies)
+    .where(or(eq(movies.videoUrl, mediaKey), eq(movies.thumbnailUrl, mediaKey)))
+    .limit(1);
+
+  return movie ?? null;
+}
+/* ========== Filme para a tela de reprodução, em qualquer status ========== */
+export async function getMovieForPlayback(movieId: string) {
+  const [movie] = await db
+    .select()
+    .from(movies)
+    .where(eq(movies.id, movieId))
+    .limit(1);
+  return movie ?? null;
+}
+/* ========== Cria ou atualiza a avaliação deste usuário neste filme ========== */
+export async function upsertUserMovieRating(data: {
+  userId: string;
+  movieId: string;
+  score: number;
+  comment: string | null;
+}) {
+  const storedScore = Math.round(data.score * 2);
+  await db
+    .insert(ratings)
+    .values({
+      movieId: data.movieId,
+      userId: data.userId,
+      score: storedScore,
+      comment: data.comment,
+    })
+    .onConflictDoUpdate({
+      target: [ratings.userId, ratings.movieId],
+      set: {
+        score: storedScore,
+        comment: data.comment,
+        updatedAt: new Date(),
+      },
+    });
+}
+
 /* ========== Avaliação deste usuário neste filme ========== */
 export async function getUserMovieRating(userId: string, movieId: string) {
   const [rating] = await db
@@ -190,7 +239,9 @@ export async function getMoviesByCreator(creatorId: string) {
   const averageRatings = db
     .select({
       movieId: ratings.movieId,
-      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      averageRating: sql<number>`avg(${ratings.score}) / 2`.as(
+        "average_rating",
+      ),
       ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
     })
     .from(ratings)
@@ -250,7 +301,9 @@ export async function getMoviesForModeration() {
   const averageRatings = db
     .select({
       movieId: ratings.movieId,
-      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      averageRating: sql<number>`avg(${ratings.score}) / 2`.as(
+        "average_rating",
+      ),
       ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
     })
     .from(ratings)
@@ -424,7 +477,9 @@ export async function getCatalogMovies() {
   const averageRatings = db
     .select({
       movieId: ratings.movieId,
-      averageRating: sql<number>`avg(${ratings.score})`.as("average_rating"),
+      averageRating: sql<number>`avg(${ratings.score}) / 2`.as(
+        "average_rating",
+      ),
       ratingsCount: sql<number>`count(*)::int`.as("ratings_count"),
     })
     .from(ratings)
@@ -467,4 +522,30 @@ export async function getCatalogMovies() {
     .leftJoin(averageRatings, eq(averageRatings.movieId, movies.id))
     .where(eq(movies.status, "PUBLISHED"))
     .orderBy(desc(movies.createdAt));
+}
+
+/* ========== Pega os comentários de um filme ========== */
+export async function getMovieComments(movieId: string) {
+  const rows = await db
+    .select({
+      id: ratings.id,
+      comment: ratings.comment,
+      score: ratings.score,
+      createdAt: ratings.createdAt,
+      authorName: user.name,
+      authorImage: user.image,
+    })
+    .from(ratings)
+    .innerJoin(user, eq(user.id, ratings.userId))
+    .where(
+      and(
+        eq(ratings.movieId, movieId),
+        sql`length(trim(coalesce(${ratings.comment}, ''))) > 0`,
+      ),
+    )
+    .orderBy(desc(ratings.createdAt));
+  return rows.map((row) => ({
+    ...row,
+    score: row.score / 2,
+  }));
 }

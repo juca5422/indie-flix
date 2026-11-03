@@ -14,6 +14,7 @@ import { useState } from "react";
 
 import { AddMovieDialog } from "@/components/filmmaker/add-movie-dialog";
 import { BanMovieDialog } from "@/components/movies/ban-movie";
+import { MovieCommentsDialog } from "@/components/movies/movie-comments-dialog";
 import { MovieStatusBanner } from "@/components/movies/movie-status-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,7 @@ export function MovieCard({
 }: MovieCardProps) {
   const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false);
 
   const actions = getMovieActions({
     role,
@@ -206,13 +208,18 @@ export function MovieCard({
               <span className="truncate text-sm text-muted">{creatorName}</span>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setIsCommentsDialogOpen(true)}
+              aria-label={`Ver comentários de ${title}`}
+              className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-1 py-0.5 hover:bg-elevated"
+            >
               <StarIcon size={17} weight="fill" className="text-star" />
               <span className="text-sm font-semibold text-text">
                 {averageRating !== null ? averageRating.toFixed(1) : "—"}
               </span>
               <span className="text-xs text-muted">({ratingsCount ?? 0})</span>
-            </div>
+            </button>
           </div>
 
           <div className="border-t border-border pt-3">
@@ -256,6 +263,12 @@ export function MovieCard({
             reason,
           });
         }}
+      />
+      <MovieCommentsDialog
+        open={isCommentsDialogOpen}
+        onOpenChange={setIsCommentsDialogOpen}
+        movieId={id}
+        movieTitle={title}
       />
     </>
   );

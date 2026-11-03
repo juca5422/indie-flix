@@ -78,6 +78,14 @@ export function MoviePlayer({
           </button>
         </div>
       )}
+      <RateMovieDialog
+        open={ratingOpen}
+        onOpenChange={setRatingOpen}
+        movieId={movieId}
+        movieTitle={title}
+        rating={rating}
+        onSaved={setRating}
+      />
     </div>
   );
 }

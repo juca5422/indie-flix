@@ -2,22 +2,40 @@ export const instant = false;
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MovieComment } from "@/components/movies/movie-comment";
 import { MoviePlayer } from "@/components/movies/movie-player";
-import { requireSession } from "@/lib/permissions";
-import { getMovieById } from "@/lib/queries/queries";
+import { canWatchMovie } from "@/lib/movies/movie-policy";
+import { requireSession, type UserRole } from "@/lib/permissions";
+import {
+  getMovieComments,
+  getMovieForPlayback,
+  getUserMovieRating,
+} from "@/lib/queries/queries";
 
 type MoviePageProps = {
   params: Promise<{ id: string }>;
 };
 
 export default async function MoviePage({ params }: MoviePageProps) {
-  await requireSession();
+  const session = await requireSession();
   const { id } = await params;
-  const movie = await getMovieById(id);
-
+  const movie = await getMovieForPlayback(id);
   if (!movie) {
     notFound();
   }
+  const role = session.user.role;
+  const canWatch =
+    typeof role === "string" &&
+    canWatchMovie({
+      role: role as UserRole,
+      status: movie.status,
+      isOwner: movie.creatorId === session.user.id,
+    });
+  if (!canWatch) {
+    notFound();
+  }
+  const comments = await getMovieComments(movie.id);
+  const rating = await getUserMovieRating(session.user.id, movie.id);
 
   return (
     <article className="space-y-4">
@@ -25,12 +43,37 @@ export default async function MoviePage({ params }: MoviePageProps) {
         Voltar ao catálogo
       </Link>
 
-      <MoviePlayer title={movie.title} src={`/api/media/${movie.videoUrl}`} />
+      <MoviePlayer
+        title={movie.title}
+        src={`/api/media/${movie.videoUrl}`}
+        movieId={movie.id}
+        initialRating={rating}
+      />
 
       <h1 className="text-2xl font-semibold tracking-tight">{movie.title}</h1>
       <p className="max-w-3xl text-sm leading-relaxed text-muted">
         {movie.synopsis}
       </p>
+      <section className="max-w-3xl space-y-4">
+        <h2 className="text-lg font-semibold">Comentários</h2>
+        {comments.length > 0 ? (
+          <ul className="space-y-6">
+            {comments.map((item) => (
+              <li key={item.id}>
+                <MovieComment
+                  authorName={item.authorName}
+                  authorImage={item.authorImage}
+                  comment={item.comment}
+                  score={item.score}
+                  createdAt={item.createdAt}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-muted">Nenhum comentário ainda.</p>
+        )}
+      </section>
     </article>
   );
 }

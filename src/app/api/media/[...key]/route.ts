@@ -1,6 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import { canWatchMovie } from "@/lib/movies/movie-policy";
+import { requireSession, type UserRole } from "@/lib/permissions";
+import { getMovieByMediaKey } from "@/lib/queries/queries";
 import { localStorage } from "@/lib/storage/local-storage";
 
 const MIME_TYPES: Record<string, string> = {
@@ -14,10 +17,26 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, { params }: RouteContext) {
+  const session = await requireSession();
   try {
     const { key } = await params;
     const mediaKey = key.join("/");
-
+    const movie = await getMovieByMediaKey(mediaKey);
+    const role = session.user.role;
+    const canWatch =
+      movie !== null &&
+      typeof role === "string" &&
+      canWatchMovie({
+        role: role as UserRole,
+        status: movie.status,
+        isOwner: movie.creatorId === session.user.id,
+      });
+    if (!canWatch) {
+      return NextResponse.json(
+        { error: "Mídia não encontrada." },
+        { status: 404 },
+      );
+    }
     // Esta rota serve somente thumbnails.
     const absolutePath = localStorage.getAbsolutePath(mediaKey);
     const extension = path.extname(absolutePath).toLowerCase();
