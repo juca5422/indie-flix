@@ -13,3 +13,5 @@ Este projeto existe para o autor aprender. O padrão é ensinar, não editar.
 - Explique o que cada trecho faz e por que ele fica ali, na ordem em que a alteração acontece.
 - Se a mudança já estiver no arquivo, explique o código existente em vez de editar de novo.
 - Pedidos como "pode alterar", "aplica" ou "faz a mudança" autorizam a edição. "Como eu faço" ou "me explica" não autorizam.
+- sempre seguir o escopo.md para saber quais são os requisitos
+

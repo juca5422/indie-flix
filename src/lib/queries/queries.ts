@@ -39,6 +39,19 @@ export async function updateMovieWithCategories(data: {
   categoryIds: string[];
 }) {
   return db.transaction(async (tx) => {
+    const [current] = await tx
+      .select({ status: movies.status })
+      .from(movies)
+      .where(
+        and(eq(movies.id, data.movieId), eq(movies.creatorId, data.creatorId)),
+      )
+      .limit(1);
+    if (
+      !current ||
+      (current.status !== "PUBLISHED" && current.status !== "BANNED")
+    ) {
+      return null;
+    }
     const [movie] = await tx
       .update(movies)
       .set({
@@ -47,18 +60,13 @@ export async function updateMovieWithCategories(data: {
         videoUrl: data.videoUrl,
         thumbnailUrl: data.thumbnailUrl,
         ageRating: data.ageRating,
-        status: "PENDING_REVIEW",
-        banReason: null,
+        status: current.status === "BANNED" ? "PENDING_REVIEW" : "PUBLISHED",
+        banReason: current.status === "BANNED" ? null : undefined,
       })
       .where(
-        and(
-          eq(movies.id, data.movieId),
-          eq(movies.creatorId, data.creatorId),
-          eq(movies.status, "BANNED"),
-        ),
+        and(eq(movies.id, data.movieId), eq(movies.creatorId, data.creatorId)),
       )
-      .returning({ id: movies.id });
-
+      .returning({ id: movies.id, status: movies.status });
     if (!movie) {
       return null;
     }
@@ -179,6 +187,21 @@ export async function getMovieByMediaKey(mediaKey: string) {
     .limit(1);
 
   return movie ?? null;
+}
+/* ========== Média e quantidade de avaliações de um filme ========== */
+export async function getMovieRatingSummary(movieId: string) {
+  const [summary] = await db
+    .select({
+      averageRating: sql<number | null>`avg(${ratings.score}) / 2`,
+      ratingsCount: sql<number>`count(*)::int`,
+    })
+    .from(ratings)
+    .where(eq(ratings.movieId, movieId));
+
+  return {
+    averageRating: summary?.averageRating ?? null,
+    ratingsCount: summary?.ratingsCount ?? 0,
+  };
 }
 /* ========== Filme para a tela de reprodução, em qualquer status ========== */
 export async function getMovieForPlayback(movieId: string) {

@@ -85,6 +85,7 @@ export function MovieCard({
   const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false);
+  const [synopsisOpen, setSynopsisOpen] = useState(false);
 
   const actions = getMovieActions({
     role,
@@ -94,6 +95,7 @@ export function MovieCard({
   });
 
   const canRequestReview = actions.includes("REQUEST_REVIEW");
+  const canEdit = actions.includes("EDIT");
   const canBanMovie = actions.includes("BAN");
   const canPublishMovie = actions.includes("PUBLISH");
   const hasMenuActions = actions.length > 0;
@@ -159,7 +161,7 @@ export function MovieCard({
                   align="end"
                   className="z-50 w-52 border border-border bg-popover text-popover-foreground shadow-lg"
                 >
-                  {canRequestReview && (
+                  {(canEdit || canRequestReview) && (
                     <DropdownMenuItem
                       disabled={!editableMovie}
                       onSelect={(event) => {
@@ -168,7 +170,7 @@ export function MovieCard({
                       }}
                     >
                       <ArrowCounterClockwiseIcon size={18} />
-                      Solicitar revisão
+                      {canEdit ? "Editar filme" : "Solicitar revisão"}
                     </DropdownMenuItem>
                   )}
 
@@ -224,17 +226,21 @@ export function MovieCard({
 
           <div className="border-t border-border pt-3">
             <Button
-              asChild
+              type="button"
               variant="ghost"
+              aria-expanded={synopsisOpen}
+              onClick={() => setSynopsisOpen((open) => !open)}
               className="h-auto justify-start gap-2 px-0 py-1 text-primary hover:bg-transparent hover:text-primary-hover"
             >
-              <Link href={`/filmes/${id}`}>
-                <InfoIcon size={18} />
-                Ver sinopse
-              </Link>
+              <InfoIcon size={18} />
+              {synopsisOpen ? "Ocultar sinopse" : "Ver sinopse"}
             </Button>
 
-            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
+            <p
+              className={`mt-2 text-sm leading-relaxed text-muted ${
+                synopsisOpen ? "" : "hidden group-hover:block"
+              }`}
+            >
               {synopsis}
             </p>
           </div>

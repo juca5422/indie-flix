@@ -8,7 +8,7 @@ export type MovieContext =
   | "ADMIN_MOVIES"
   | "ADMIN_REVIEW";
 
-export type MovieAction = "REQUEST_REVIEW" | "BAN" | "PUBLISH";
+export type MovieAction = "REQUEST_REVIEW" | "EDIT" | "BAN" | "PUBLISH";
 
 type MoviePolicyInput = {
   role: UserRole;
@@ -36,12 +36,12 @@ export function getMovieActions({
 
   // Área de gerenciamento dos próprios filmes.
   if (context === "FILMMAKER") {
-    const canRequestReview =
-      (role === ROLES.FILMMAKER || role === ROLES.ADMIN) &&
-      isOwner &&
-      status === "BANNED";
-
-    return canRequestReview ? ["REQUEST_REVIEW"] : [];
+    const isCreator =
+      (role === ROLES.FILMMAKER || role === ROLES.ADMIN) && isOwner;
+    if (!isCreator) return [];
+    if (status === "PUBLISHED") return ["EDIT"];
+    if (status === "BANNED") return ["REQUEST_REVIEW"];
+    return [];
   }
 
   // As duas áreas administrativas são exclusivas do ADMIN.

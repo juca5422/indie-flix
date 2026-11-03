@@ -211,7 +211,7 @@ export async function updateMovie(input: unknown): Promise<MovieActionResult> {
       return {
         success: false,
         message:
-          "Não foi possível editar o filme. Verifique se ele pertence a você e está banido.",
+          "Não foi possível editar o filme. Verifique se ele pertence a você",
       };
     }
 
@@ -219,10 +219,12 @@ export async function updateMovie(input: unknown): Promise<MovieActionResult> {
     revalidatePath("/admin");
     revalidatePath("/");
     revalidatePath("/filmes");
-
     return {
       success: true,
-      message: "Filme atualizado e enviado para nova análise.",
+      message:
+        movie.status === "PENDING_REVIEW"
+          ? "Filme atualizado e enviado para nova análise."
+          : "Filme atualizado.",
     };
   } catch (error) {
     console.error("Erro ao editar filme:", error);

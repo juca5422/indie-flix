@@ -9,6 +9,7 @@ import { requireSession, type UserRole } from "@/lib/permissions";
 import {
   getMovieComments,
   getMovieForPlayback,
+  getMovieRatingSummary,
   getUserMovieRating,
 } from "@/lib/queries/queries";
 
@@ -36,6 +37,9 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
   const comments = await getMovieComments(movie.id);
   const rating = await getUserMovieRating(session.user.id, movie.id);
+  const summary = await getMovieRatingSummary(movie.id);
+  const averageRating =
+    summary.averageRating === null ? null : Number(summary.averageRating);
 
   return (
     <article className="space-y-4">
@@ -50,7 +54,18 @@ export default async function MoviePage({ params }: MoviePageProps) {
         initialRating={rating}
       />
 
-      <h1 className="text-2xl font-semibold tracking-tight">{movie.title}</h1>
+      <h1 className="flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">
+        <span className="inline-flex items-center gap-1 text-base text-star">
+          <span aria-hidden="true">★</span>
+          <span className="text-text">
+            {averageRating !== null ? averageRating.toFixed(1) : "—"}
+          </span>
+          <span className="font-normal text-muted">
+            ({summary.ratingsCount})
+          </span>
+        </span>
+        <span>{movie.title}</span>
+      </h1>
       <p className="max-w-3xl text-sm leading-relaxed text-muted">
         {movie.synopsis}
       </p>
