@@ -122,7 +122,7 @@ export function MovieCard({
               }}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-transparent to-bg/20" />
+            <div className="absolute inset-0 shadow-menu-card-gradient-to-t from-shadow-menu-card-gradient/90 via-transparent to-shadow-menu-card-gradient/20" />
 
             <Badge className="absolute left-3 top-3 border border-white/10 bg-bg/80 text-text backdrop-blur hover:bg-bg/90">
               {category}

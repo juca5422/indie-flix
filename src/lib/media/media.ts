@@ -6,6 +6,12 @@ type UploadResponse = {
   type: MediaType;
 };
 
+function mediaLabel(type: MediaType): string {
+  return type === "videos" ? "o vídeo" : "a capa";
+}
+function failUpload(type: MediaType, message: string): Error {
+  return new Error(`Não foi possível enviar ${mediaLabel(type)}: ${message}`);
+}
 function readUploadError(result: unknown): string {
   if (
     typeof result === "object" &&
@@ -43,8 +49,8 @@ export function uploadMedia(
   return new Promise((resolve, reject) => {
     const formData = new FormData();
 
-    formData.append("file", file);
     formData.append("type", type);
+    formData.append("file", file);
 
     const xhr = new XMLHttpRequest();
 
@@ -63,23 +69,23 @@ export function uploadMedia(
     };
 
     xhr.onerror = () => {
-      reject(new Error("Não foi possível enviar o arquivo."));
+      reject(failUpload(type, "Não foi possível enviar o arquivo."));
     };
 
     xhr.onabort = () => {
-      reject(new Error("O envio do arquivo foi cancelado."));
+      reject(failUpload(type, "o envio foi cancelado."));
     };
 
     xhr.onload = () => {
       const result: unknown = xhr.response;
 
       if (xhr.status < 200 || xhr.status >= 300) {
-        reject(new Error(readUploadError(result)));
+        reject(failUpload(type, readUploadError(result)));
         return;
       }
 
       if (!isUploadResponse(result, type)) {
-        reject(new Error("O servidor retornou uma resposta inválida."));
+        reject(failUpload(type, "O servidor retornou uma resposta inválida."));
         return;
       }
 

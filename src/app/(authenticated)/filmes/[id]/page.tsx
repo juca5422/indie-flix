@@ -43,10 +43,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   return (
     <article className="space-y-4">
-      <Link href="/home" className="text-sm text-muted hover:text-text">
-        Voltar ao catálogo
-      </Link>
-
       <MoviePlayer
         title={movie.title}
         src={`/api/media/${movie.videoUrl}`}

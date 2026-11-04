@@ -50,7 +50,7 @@ RF04 — Moderação e Fluxo de Banimento
 RF04.1: O ADM possui uma área de gestão onde visualiza todas as publicações da plataforma.
 RF04.2: Ao detectar uma irregularidade, o ADM pode aplicar o status de Banido ao filme, preenchendo obrigatoriamente uma Justificativa do Banimento.
 RF04.3: Filmes banidos não aparecem na listagem/busca de usuários comuns.
-RF04.4: O criador (Filmmaker) visualiza o motivo do banimento em seu painel e pode editar/corrigir o conteúdo para re-submissão.
+RF04.4: O criador (Filmmaker) visualiza o motivo do banimento em seu painel e pode editar/corrigir o conteúdo para re-submissão
 RF05 — Reprodução de Vídeo (Player)
 RF05.1 (Mínimo): Exibição simples do arquivo de vídeo via tag HTML5 <video> ou player padrão.
 5. Requisitos Não-Funcionais e UI/UX

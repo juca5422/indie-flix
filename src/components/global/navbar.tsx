@@ -14,6 +14,7 @@ import { authClient } from "@/lib/auth-client";
 import type { UserRole } from "@/lib/roles";
 import { ROLES, userRoleSchema } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
 
 const links: {
   label: string;
@@ -31,6 +32,12 @@ const links: {
     roles: [ROLES.ADMIN],
   },
 ];
+function isLinkActive(pathname: string, href: string) {
+  if (href.startsWith("/admin")) {
+    return pathname === "/admin" || pathname.startsWith("/admin/");
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -80,8 +87,7 @@ export default function Navbar() {
         {/* Navegação desktop */}
         <div className="hidden items-center gap-1 md:flex">
           {visibleLinks.map((link) => {
-            const active =
-              pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const active = isLinkActive(pathname, link.href);
 
             return (
               <Link
@@ -126,6 +132,8 @@ export default function Navbar() {
             </div>
           </div>
 
+          <ThemeToggle />
+
           <button
             type="button"
             onClick={handleSignOut}
@@ -142,8 +150,7 @@ export default function Navbar() {
       {visibleLinks.length > 0 && (
         <div className="flex gap-1 overflow-x-auto border-t border-border px-3 py-2 md:hidden">
           {visibleLinks.map((link) => {
-            const active =
-              pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const active = isLinkActive(pathname, link.href);
 
             return (
               <Link

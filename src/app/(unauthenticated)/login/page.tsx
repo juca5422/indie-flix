@@ -29,6 +29,21 @@ export default function LoginPage() {
     Partial<Record<keyof LoginInput, string>>
   >({});
 
+  async function signInWithGoogle() {
+    setFormError(null);
+    setPending(true);
+
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/home",
+    });
+
+    if (error) {
+      setFormError(authErrorMessage(error.message));
+      setPending(false);
+    }
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
@@ -149,6 +164,16 @@ export default function LoginPage() {
             {pending ? "Entrando..." : "Entrar"}
           </Button>
         </form>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="mt-4 w-full"
+          disabled={pending}
+          onClick={signInWithGoogle}
+        >
+          Entrar com Google
+        </Button>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-muted">

@@ -11,6 +11,7 @@
   /* Popovers e menus */
   --color-popover: #171e2e;
   --color-popover-foreground: #e6eaf2;
+  --shadow-menu-card: #0f1420;
 
   /* Texto */
   --color-text: #e6eaf2;
@@ -82,4 +83,40 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-border) transparent;
   }
+}
+html.light {
+  color-scheme: light;
+  --color-bg: #c6cdfa;
+  --color-surface: #cee0f9;
+  --color-elevated: #dde2ec;
+  --color-border: #9aa3b5;
+  /* Popovers e menus */
+  --color-popover: #f3f5f8;
+  --color-popover-foreground: #202a3f;
+
+  /* Texto */
+  --color-text: #202a3f;
+  --color-muted: #68758b;
+
+  /* Acentos */
+  --color-primary: #7183e8;
+  --color-primary-hover: #8797f2;
+  --color-accent: #208782;
+  --color-star: #d99e32;
+  --shadow-menu-card: #0f1420;
+  /* Estados */
+  --color-success: #1e8657;
+  --color-warning: #c58b32;
+  --color-danger: #d65c65;
+
+  /* Nomes que o shadcn usa */
+  --color-background: #e6e9f0;
+  --color-card: #f3f5f8;
+  --color-foreground: #202a3f;
+
+  --color-card-foreground: #202a3f;
+  --color-muted: #3a465c;
+  --color-muted-foreground: #39475e;
+  --color-destructive: #d65c65;
+  --color-ring: #7183e8;
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { StarIcon } from "@phosphor-icons/react";
-import { useRef, useState } from "react";
+import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import {
   type MovieRatingValue,
   RateMovieDialog,
@@ -28,6 +29,16 @@ export function MoviePlayer({
     void videoRef.current?.play();
   }
 
+  useEffect(() => {
+    const video = videoRef.current;
+
+    return () => {
+      if (!video) return;
+
+      video.pause();
+    };
+  }, []);
+
   function togglePlayback() {
     const video = videoRef.current;
     if (!video) return;
@@ -40,6 +51,13 @@ export function MoviePlayer({
 
   return (
     <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
+      <Link
+        href="/home"
+        aria-label="Voltar ao catálogo"
+        className="absolute top-4 left-4 z-20 flex size-10 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+      >
+        <ArrowLeftIcon size={22} weight="bold" />
+      </Link>
       <video
         ref={videoRef}
         className="h-full w-full"
