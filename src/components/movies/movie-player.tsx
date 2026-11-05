@@ -133,37 +133,39 @@ export function MoviePlayer({
               {title}
             </span>
           </p>
-          <button
-            type="button"
-            aria-label={
-              rating ? `Editar avaliação de ${title}` : `Avaliar ${title}`
-            }
-            title={rating ? "Editar avaliação" : "Avaliar filme"}
-            onClick={(event) => {
-              event.stopPropagation();
-              setRatingOpen(true);
-            }}
-            className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-star"
-          >
-            <StarIcon size={32} weight={rating ? "fill" : "regular"} />
-          </button>
-          <button
-            type="button"
-            aria-label={
-              favorited
-                ? `Remover ${title} dos favoritos`
-                : `Favoritar ${title}`
-            }
-            aria-pressed={favorited}
-            title={favorited ? "Remover dos favoritos" : "Favoritar"}
-            onClick={(event) => {
-              event.stopPropagation();
-              void handleToggleFavorite();
-            }}
-            className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-white"
-          >
-            <HeartIcon size={32} weight={favorited ? "fill" : "regular"} />
-          </button>
+          <div className="pointer-events-auto absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4">
+            <button
+              type="button"
+              aria-label={
+                rating ? `Editar avaliação de ${title}` : `Avaliar ${title}`
+              }
+              title={rating ? "Editar avaliação" : "Avaliar filme"}
+              onClick={(event) => {
+                event.stopPropagation();
+                setRatingOpen(true);
+              }}
+              className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-star"
+            >
+              <StarIcon size={32} weight={rating ? "fill" : "regular"} />
+            </button>
+            <button
+              type="button"
+              aria-label={
+                favorited
+                  ? `Remover ${title} dos favoritos`
+                  : `Favoritar ${title}`
+              }
+              aria-pressed={favorited}
+              title={favorited ? "Remover dos favoritos" : "Favoritar"}
+              onClick={(event) => {
+                event.stopPropagation();
+                void handleToggleFavorite();
+              }}
+              className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-white"
+            >
+              <HeartIcon size={32} weight={favorited ? "fill" : "regular"} />
+            </button>
+          </div>
         </div>
       )}
       <RateMovieDialog

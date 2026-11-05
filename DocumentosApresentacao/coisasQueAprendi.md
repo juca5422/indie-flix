@@ -9,5 +9,6 @@
 5- certificado SSL -> para termos HTTPS precisamos ter um certificado SSL que é o que criptografa todo o pacote até chegar no servidor, mas existe uma questão, quem emmite os certificados são as CAs e temos as reconhecidas mundialmente , e as locais criadas por nós, para ter um certificado SSL de uma CA mundial precisamos ter ou um DNS ou um ip publico para que sejá possivel fazer a prova ACME para validar o certificado, ou seja em lab sem dominio e ip publico n tem como usa-la.
 Podemos criar no CA-interna e não precisar fazer o ACME, porem todas as pessoas da rede que acessarem aquele site, obrigatoriamente tem que instalar o certificado para ser reconhecido se não n consegue acessar o site
 
+6 - aprendi como estilizar o site de modo global -> sempre usamos o global.css para definir estilos e cores e dessa forma conseguimos criar o modo dark e light e definir uma identidade para o site
 
-
+7 - Criar componentes -> ESSE É O PRINCIPAL APRENDIZADO, pois se soubesse isso lá trás teria feito muito melhor e muito mais rapido a demanda do PH3A não ter colocado umonte de div como fiz.
