@@ -3,6 +3,7 @@
 import {
   ArrowCounterClockwiseIcon,
   DotsThreeVerticalIcon,
+  HeartIcon,
   InfoIcon,
   PlayIcon,
   ProhibitIcon,
@@ -25,6 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toggleFavorite } from "@/lib/actions/favorites";
 import { banMovieAction, publishMovieAction } from "@/lib/actions/movies";
 import {
   getMovieActions,
@@ -59,6 +61,7 @@ interface MovieCardProps {
   role: UserRole;
   context: MovieContext;
   isOwner: boolean;
+  initialFavorited: boolean;
 
   // Necessário para abrir o formulário com os dados completos.
   editableMovie?: EditableMovie;
@@ -81,11 +84,24 @@ export function MovieCard({
   context,
   isOwner,
   editableMovie,
+  initialFavorited,
 }: MovieCardProps) {
   const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false);
   const [synopsisOpen, setSynopsisOpen] = useState(false);
+  const [favorited, setFavorited] = useState(initialFavorited);
+
+  async function handleToggleFavorite() {
+    const next = !favorited;
+    setFavorited(next);
+
+    const result = await toggleFavorite({ movieId: id });
+
+    if (!result.success) {
+      setFavorited(!next);
+    }
+  }
 
   const actions = getMovieActions({
     role,
@@ -135,11 +151,24 @@ export function MovieCard({
               </span>
             </span>
 
-            <span className="absolute inset-x-0 bottom-0 p-4">
+            <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-2 p-4">
+              <button
+                type="button"
+                onClick={handleToggleFavorite}
+                aria-label={
+                  favorited
+                    ? `Remover ${title} dos favoritos`
+                    : `Favoritar ${title}`
+                }
+                aria-pressed={favorited}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/60 text-white"
+              >
+                <HeartIcon size={20} weight={favorited ? "fill" : "regular"} />
+              </button>
               <span className="line-clamp-1 text-lg font-semibold text-white">
                 {title}
               </span>
-            </span>
+            </div>
           </Link>
 
           {hasMenuActions && (

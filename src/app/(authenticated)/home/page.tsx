@@ -6,6 +6,7 @@ import { requireSession, type UserRole } from "@/lib/permissions";
 import {
   getCatalogMovies,
   getCategoriesWithPublishedMovies,
+  getFavoriteMovieIds,
 } from "@/lib/queries/queries";
 
 type HomePageProps = {
@@ -22,7 +23,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const session = await requireSession();
   const { q } = await searchParams;
   const term = q?.trim() ?? "";
-
+  const favoriteIds = new Set(await getFavoriteMovieIds(session.user.id));
   const [categories, movies] = await Promise.all([
     getCategoriesWithPublishedMovies(),
     getCatalogMovies(),
@@ -59,6 +60,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 role={session.user.role as UserRole}
                 context="HOME"
                 isOwner={movie.creatorId === session.user.id}
+                initialFavorited={favoriteIds.has(movie.id)}
               />
             ))}
           </div>

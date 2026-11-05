@@ -137,6 +137,21 @@ export async function isMovieFavorited(userId: string, movieId: string) {
   return result.length > 0;
 }
 
+/* ========== Favorita ou remove o favorito deste usuário neste filme ========== */
+export async function toggleMovieFavorite(userId: string, movieId: string) {
+  const removed = await db
+    .delete(favorites)
+    .where(and(eq(favorites.userId, userId), eq(favorites.movieId, movieId)))
+    .returning({ id: favorites.id });
+
+  if (removed.length > 0) {
+    return false;
+  }
+
+  await db.insert(favorites).values({ userId, movieId });
+  return true;
+}
+
 /* ========== Pega os IDs dos filmes favoritados por um usuário ========== */
 export async function getFavoriteMovieIds(userId: string) {
   const result = await db

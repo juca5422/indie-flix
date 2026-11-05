@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowLeftIcon, StarIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, HeartIcon, StarIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   type MovieRatingValue,
   RateMovieDialog,
 } from "@/components/movies/rating-movie-dialog";
+import { toggleFavorite } from "@/lib/actions/favorites";
 import { saveWatchProgress } from "@/lib/actions/watch-progress";
 
 const SAVE_INTERVAL_MS = 15 * 1000; // 15 segundos
@@ -17,6 +18,7 @@ type MoviePlayerProps = {
   src: string;
   initialRating: MovieRatingValue | null;
   initialProgressSeconds: number;
+  initialFavorited: boolean;
 };
 
 function saveProgress(movieId: string, video: HTMLVideoElement) {
@@ -27,6 +29,7 @@ function saveProgress(movieId: string, video: HTMLVideoElement) {
 }
 export function MoviePlayer({
   movieId,
+  initialFavorited,
   title,
   src,
   initialRating,
@@ -36,6 +39,15 @@ export function MoviePlayer({
   const [paused, setPaused] = useState(true);
   const [rating, setRating] = useState(initialRating);
   const [ratingOpen, setRatingOpen] = useState(false);
+  const [favorited, setFavorited] = useState(initialFavorited);
+  async function handleToggleFavorite() {
+    const next = !favorited;
+    setFavorited(next);
+    const result = await toggleFavorite({ movieId });
+    if (!result.success) {
+      setFavorited(!next);
+    }
+  }
 
   function play() {
     void videoRef.current?.play();
@@ -84,7 +96,30 @@ export function MoviePlayer({
       >
         <ArrowLeftIcon size={22} weight="bold" />
       </Link>
-      vb
+      <video
+        ref={videoRef}
+        className="h-full w-full"
+        src={src}
+        controls
+        playsInline
+        preload="metadata"
+        onLoadedMetadata={(event) => {
+          const video = event.currentTarget;
+          if (
+            initialProgressSeconds > 0 &&
+            initialProgressSeconds < video.duration
+          ) {
+            video.currentTime = initialProgressSeconds;
+          }
+        }}
+        onPlay={() => setPaused(false)}
+        onPause={(event) => {
+          setPaused(true);
+          saveProgress(movieId, event.currentTarget);
+        }}
+      >
+        <track kind="captions" />
+      </video>
       <button
         type="button"
         onClick={togglePlayback}
@@ -92,8 +127,12 @@ export function MoviePlayer({
         className="absolute inset-x-0 top-0 bottom-14 cursor-pointer"
       />
       {paused && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 bottom-14 z-10 flex flex-col items-center justify-center gap-4 bg-bg/75 px-6 text-center">
-          <p className="text-2xl font-semibold text-white">{title}</p>
+        <div className="pointer-events-none absolute inset-x-0 top-0 bottom-14 z-10">
+          <p className="absolute top-4 right-16 left-16 text-center">
+            <span className="inline-block max-w-full truncate rounded-lg bg-black/60 px-4 py-2 text-2xl font-semibold text-white">
+              {title}
+            </span>
+          </p>
           <button
             type="button"
             aria-label={
@@ -104,9 +143,26 @@ export function MoviePlayer({
               event.stopPropagation();
               setRatingOpen(true);
             }}
-            className="pointer-events-auto flex size-14 items-center justify-center rounded-full border border-white/30 text-star"
+            className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-star"
           >
             <StarIcon size={32} weight={rating ? "fill" : "regular"} />
+          </button>
+          <button
+            type="button"
+            aria-label={
+              favorited
+                ? `Remover ${title} dos favoritos`
+                : `Favoritar ${title}`
+            }
+            aria-pressed={favorited}
+            title={favorited ? "Remover dos favoritos" : "Favoritar"}
+            onClick={(event) => {
+              event.stopPropagation();
+              void handleToggleFavorite();
+            }}
+            className="flex size-14 items-center justify-center rounded-full border border-white/30 bg-black/60 text-white"
+          >
+            <HeartIcon size={32} weight={favorited ? "fill" : "regular"} />
           </button>
         </div>
       )}

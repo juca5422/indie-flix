@@ -12,6 +12,7 @@ import {
   getMovieRatingSummary,
   getUserMovieRating,
   getUserWatchProgress,
+  isMovieFavorited,
 } from "@/lib/queries/queries";
 
 type MoviePageProps = {
@@ -22,7 +23,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const session = await requireSession();
   const { id } = await params;
   const movie = await getMovieForPlayback(id);
-
+  const favorited = await isMovieFavorited(session.user.id, movie.id);
   if (!movie) {
     notFound();
   }
