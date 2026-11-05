@@ -7,18 +7,30 @@ import {
   type MovieRatingValue,
   RateMovieDialog,
 } from "@/components/movies/rating-movie-dialog";
+import { saveWatchProgress } from "@/lib/actions/watch-progress";
+
+const SAVE_INTERVAL_MS = 15 * 1000; // 15 segundos
 
 type MoviePlayerProps = {
   movieId: string;
   title: string;
   src: string;
   initialRating: MovieRatingValue | null;
+  initialProgressSeconds: number;
 };
+
+function saveProgress(movieId: string, video: HTMLVideoElement) {
+  void saveWatchProgress({
+    movieId,
+    progressSeconds: Math.floor(video.currentTime),
+  });
+}
 export function MoviePlayer({
   movieId,
   title,
   src,
   initialRating,
+  initialProgressSeconds,
 }: MoviePlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(true);
@@ -35,9 +47,10 @@ export function MoviePlayer({
     return () => {
       if (!video) return;
 
+      saveProgress(movieId, video);
       video.pause();
     };
-  }, []);
+  }, [movieId]);
 
   function togglePlayback() {
     const video = videoRef.current;
@@ -49,6 +62,19 @@ export function MoviePlayer({
     video.pause();
   }
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const interval = setInterval(() => {
+      if (!video.paused) {
+        saveProgress(movieId, video);
+      }
+    }, SAVE_INTERVAL_MS);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [movieId]);
+
   return (
     <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
       <Link
@@ -58,19 +84,7 @@ export function MoviePlayer({
       >
         <ArrowLeftIcon size={22} weight="bold" />
       </Link>
-      <video
-        ref={videoRef}
-        className="h-full w-full"
-        src={src}
-        controls
-        playsInline
-        preload="metadata"
-        onPlay={() => setPaused(false)}
-        onPause={() => setPaused(true)}
-      >
-        <track kind="captions" />
-      </video>
-
+      vb
       <button
         type="button"
         onClick={togglePlayback}

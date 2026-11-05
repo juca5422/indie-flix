@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  serverExternalPackages: ["sharp"],
   reactCompiler: true,
   turbopack: {
     rules: {

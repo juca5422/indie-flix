@@ -11,6 +11,7 @@ import {
   getMovieForPlayback,
   getMovieRatingSummary,
   getUserMovieRating,
+  getUserWatchProgress,
 } from "@/lib/queries/queries";
 
 type MoviePageProps = {
@@ -38,6 +39,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
   const comments = await getMovieComments(movie.id);
   const rating = await getUserMovieRating(session.user.id, movie.id);
+  const watchProgress = await getUserWatchProgress(session.user.id, movie.id);
   const summary = await getMovieRatingSummary(movie.id);
   const averageRating =
     summary.averageRating === null ? null : Number(summary.averageRating);
@@ -49,6 +51,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
         src={`/api/media/${movie.videoUrl}`}
         movieId={movie.id}
         initialRating={rating}
+        initialProgressSeconds={watchProgress}
       />
 
       <h1 className="flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">

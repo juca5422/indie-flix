@@ -19,10 +19,4 @@ export const favoriteSchema = z.object({
   movieId: z.uuid(),
 });
 
-export const watchProgressSchema = z.object({
-  movieId: z.uuid(),
-  progressSeconds: z.number().int().min(0),
-});
-
-export type WatchProgressInput = z.infer<typeof watchProgressSchema>;
 export type FavoriteInput = z.infer<typeof favoriteSchema>;

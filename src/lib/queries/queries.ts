@@ -7,6 +7,7 @@ import {
   movieCategories,
   movies,
   ratings,
+  watchProgress,
 } from "@/db/schema/catalog";
 
 /* ========== Pega os Favoritos de um usuário ========== */
@@ -236,6 +237,39 @@ export async function upsertUserMovieRating(data: {
         updatedAt: new Date(),
       },
     });
+}
+/* ========== Salva até onde este usuário assistiu o filme ========== */
+export async function upsertWatchProgress(data: {
+  userId: string;
+  movieId: string;
+  progressSeconds: number;
+}) {
+  await db
+    .insert(watchProgress)
+    .values({
+      userId: data.userId,
+      movieId: data.movieId,
+      progressSeconds: data.progressSeconds,
+    })
+    .onConflictDoUpdate({
+      target: [watchProgress.userId, watchProgress.movieId],
+      set: {
+        progressSeconds: data.progressSeconds,
+        lastWatchedAt: new Date(),
+      },
+    });
+}
+
+/* ========== Até onde este usuário assistiu o filme (0 se nunca assistiu) ========== */
+export async function getUserWatchProgress(userId: string, movieId: string) {
+  const [row] = await db
+    .select({ progressSeconds: watchProgress.progressSeconds })
+    .from(watchProgress)
+    .where(
+      and(eq(watchProgress.userId, userId), eq(watchProgress.movieId, movieId)),
+    )
+    .limit(1);
+  return row?.progressSeconds ?? 0;
 }
 
 /* ========== Avaliação deste usuário neste filme ========== */

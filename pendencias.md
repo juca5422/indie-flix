@@ -17,7 +17,7 @@ Streaming por Range Request e comentários na página do filme (com o filmmaker 
 - [x] **Tema claro / escuro.** Alternância de modo light e dark.
 - [x] **Login social.** SSO pelo Better Auth (Google, GitHub etc.).
 - [ ] **Banner de destaque.** O carrossel e o hover que mostra a sinopse já existem. Falta o banner de destaque citado junto deles.
-- [ ] **Progresso e histórico.** O player salva o tempo em que o usuário parou, oferece "Continuar assistindo" e guarda um histórico dos últimos filmes assistidos.
+- [x] **Progresso e histórico.** O player salva o tempo em que o usuário parou, oferece "Continuar assistindo" e guarda um histórico dos últimos filmes assistidos.
 - [ ] **Ficha técnica.** O admin cadastra pessoas (atores, diretores, dubladores etc.) com tags/funções. Filmmaker e admin vinculam esse elenco ao filme.
 - [ ] **Player customizado.** Player dedicado ou customizado, com controle de qualidade, atalhos de teclado, barra de progresso personalizada e ajuste de velocidade.
 - [ ] **Séries / sequências.** Organizar conteúdos em sequências/continuações de filmes, ou em séries com temporadas e episódios. O texto pede um dos dois.
