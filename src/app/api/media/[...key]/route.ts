@@ -1,8 +1,9 @@
 import { createReadStream } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { NextResponse } from "next/server";
+import sharp from "sharp";
 import { canWatchMovie } from "@/lib/movies/movie-policy";
 import { requireSession, type UserRole } from "@/lib/permissions";
 import { getMovieByMediaKey } from "@/lib/queries/queries";
@@ -13,6 +14,29 @@ const MIME_TYPES: Record<string, string> = {
   ".png": "image/png",
   ".webp": "image/webp",
 };
+
+const COVER_MAX_WIDTH = 640;
+async function readOptimizedCover(absolutePath: string) {
+  const cachePath = path.join(
+    path.dirname(absolutePath),
+    ".cache",
+    `${path.basename(absolutePath)}.webp`,
+  );
+
+  try {
+    return await readFile(cachePath);
+  } catch {
+    // A capa ainda não foi reduzida. Gera e guarda para a próxima visita.
+  }
+  const optimized = await sharp(absolutePath)
+    .rotate()
+    .resize({ width: COVER_MAX_WIDTH, withoutEnlargement: true })
+    .webp({ quality: 75 })
+    .toBuffer();
+  await mkdir(path.dirname(cachePath), { recursive: true });
+  await writeFile(cachePath, optimized);
+  return optimized;
+}
 
 const VIDEO_CHUNK_BYTES = 8 * 1024 * 1024;
 
@@ -179,21 +203,19 @@ export async function GET(request: Request, { params }: RouteContext) {
         { status: 403 },
       );
     }
-    const contentType = MIME_TYPES[extension];
-
-    if (!contentType) {
+    if (!MIME_TYPES[extension]) {
       return NextResponse.json(
         { error: "Formato de imagem não permitido." },
         { status: 400 },
       );
     }
 
-    const image = await readFile(absolutePath);
+    const image = await readOptimizedCover(absolutePath);
 
     return new NextResponse(image, {
       headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "private, max-age=3600",
+        "Content-Type": "image/webp",
+        "Cache-Control": "private, max-age=86400",
         "X-Content-Type-Options": "nosniff",
       },
     });

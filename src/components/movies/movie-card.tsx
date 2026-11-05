@@ -113,13 +113,14 @@ export function MovieCard({
             aria-label={`Ver detalhes de ${title}`}
             className="relative block aspect-video overflow-hidden bg-elevated"
           >
-            <div
-              role="img"
-              aria-label={`Capa de ${title}`}
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-              style={{
-                backgroundImage: `url("/api/media/${thumbnailUrl}")`,
-              }}
+            <img
+              src={`/api/media/${thumbnailUrl}`}
+              alt={`Capa de ${title}`}
+              width={640}
+              height={360}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
 
             <div className="absolute inset-0 shadow-menu-card-gradient-to-t from-shadow-menu-card-gradient/90 via-transparent to-shadow-menu-card-gradient/20" />
