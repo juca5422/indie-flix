@@ -2,19 +2,15 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { db } from "@/db";
 import { categories, movieCategories } from "@/db/schema/catalog";
 import { requireAdmin } from "@/lib/permissions";
 import { getCategories } from "@/lib/queries/queries";
-
-const createCategorySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "O nome da categoria é obrigatório.")
-    .max(100, "O nome deve ter no máximo 100 caracteres."),
-});
+import {
+  createCategorySchema,
+  deleteCategorySchema,
+  updateCategorySchema,
+} from "@/schemas/categories";
 
 type CreateCategoryResult = {
   success: boolean;
@@ -78,11 +74,6 @@ export async function createCategory(
   }
 }
 
-// Adicione junto às outras funções do arquivo.
-const deleteCategorySchema = z.object({
-  id: z.string().uuid("Identificador de categoria inválido."),
-});
-
 type DeleteCategoryResult = {
   success: boolean;
   message: string;
@@ -145,15 +136,6 @@ export async function deleteCategory(
     };
   }
 }
-
-const updateCategorySchema = z.object({
-  id: z.string().uuid("Identificador de categoria inválido."),
-  name: z
-    .string()
-    .trim()
-    .min(1, "O nome da categoria é obrigatório.")
-    .max(100, "O nome deve ter no máximo 100 caracteres."),
-});
 
 type UpdateCategoryResult = {
   success: boolean;

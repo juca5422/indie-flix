@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 import { ROLES, requireRole } from "@/lib/permissions";
 import {
@@ -11,40 +10,13 @@ import {
   resubmitMovieForReview,
   updateMovieWithCategories,
 } from "@/lib/queries/queries";
+import {
+  banMovieSchema,
+  createMovieSchema,
+  movieIdSchema,
+  updateMovieSchema,
+} from "@/schemas/movies";
 
-const createMovieSchema = z.object({
-  title: z.string().trim().min(1, "O título é obrigatório.").max(200),
-  synopsis: z.string().trim().min(1, "A sinopse é obrigatória.").max(5000),
-  videoUrl: z.string().trim().min(1, "O vídeo é obrigatório."),
-  thumbnailUrl: z.string().trim().min(1, "A thumbnail é obrigatória."),
-  ageRating: z.enum(["L", "10", "12", "14", "16", "18"]),
-  categoryIds: z
-    .array(z.string().uuid())
-    .min(1, "Selecione pelo menos uma categoria."),
-});
-
-const movieIdSchema = z.string().uuid("ID do filme inválido.");
-
-const banMovieSchema = z.object({
-  movieId: movieIdSchema,
-  reason: z
-    .string()
-    .trim()
-    .min(1, "O motivo do banimento é obrigatório.")
-    .max(1000, "O motivo deve ter no máximo 1000 caracteres."),
-});
-
-const updateMovieSchema = z.object({
-  movieId: movieIdSchema,
-  title: z.string().trim().min(1, "O título é obrigatório.").max(200),
-  synopsis: z.string().trim().min(1, "A sinopse é obrigatória.").max(5000),
-  videoUrl: z.string().trim().min(1, "O vídeo é obrigatório."),
-  thumbnailUrl: z.string().trim().min(1, "A thumbnail é obrigatória."),
-  ageRating: z.enum(["L", "10", "12", "14", "16", "18"]),
-  categoryIds: z
-    .array(z.string().uuid())
-    .min(1, "Selecione pelo menos uma categoria."),
-});
 type MovieActionResult = {
   success: boolean;
   message: string;

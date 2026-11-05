@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { requireSession } from "@/lib/permissions";
 import {
   getMovieById,
   getMovieComments,
   upsertUserMovieRating,
 } from "@/lib/queries/queries";
+import { movieIdSchema } from "@/schemas/movies";
 import { ratingSchema } from "@/schemas/schema";
 
 type SaveRatingResult = {
@@ -65,8 +65,6 @@ export async function saveRating(input: unknown): Promise<SaveRatingResult> {
     };
   }
 }
-
-const movieIdSchema = z.uuid();
 
 export async function listMovieComments(movieId: unknown) {
   await requireSession();

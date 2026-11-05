@@ -3,16 +3,11 @@
 
 import {  eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { requireAdmin } from "@/lib/permissions";
-
-const updateUserRoleSchema = z.object({
-  userId: z.string().trim().min(1, "Usuário inválido."),
-  role: z.enum(["USER", "FILMMAKER", "ADMIN"]),
-});
+import { updateUserRoleSchema } from "@/schemas/users";
 
 type UpdateUserRoleResult = {
   success: boolean;

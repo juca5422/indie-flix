@@ -21,6 +21,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const session = await requireSession();
   const { id } = await params;
   const movie = await getMovieForPlayback(id);
+
   if (!movie) {
     notFound();
   }

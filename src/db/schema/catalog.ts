@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   check,
   index,
+  integer,
   pgEnum,
   pgTable,
   primaryKey,
@@ -148,6 +149,22 @@ export const favorites = pgTable(
     // Facilita encontrar usuários que favoritaram um filme
     index("favorites_movie_idx").on(t.movieId),
   ],
+);
+
+export const watchProgress = pgTable(
+  "watch_progress",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    movieId: uuid("movie_id")
+      .notNull()
+      .references(() => movies.id, { onDelete: "cascade" }),
+    progressSeconds: integer("progress_seconds").notNull(),
+    lastWatchedAt: timestamp("last_watched_at").defaultNow().notNull(),
+  },
+  (t) => [unique("watch_progress_user_movie_unique").on(t.userId, t.movieId)],
 );
 
 /* ========== Tipos ========== */

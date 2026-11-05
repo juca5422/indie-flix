@@ -120,3 +120,7 @@ html.light {
   --color-destructive: #d65c65;
   --color-ring: #7183e8;
 }
+video::-webkit-media-controls-panel {
+  background-image: none;
+  background-color: rgb(15 20 32 / 0.92);
+}
