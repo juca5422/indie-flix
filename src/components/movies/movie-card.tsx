@@ -139,7 +139,7 @@ export function MovieCard({
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
 
-            <div className="absolute inset-0 shadow-menu-card-gradient-to-t from-shadow-menu-card-gradient/90 via-transparent to-shadow-menu-card-gradient/20" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20" />
 
             <Badge className="absolute left-3 top-3 border border-white/10 bg-bg/80 text-text backdrop-blur hover:bg-bg/90">
               {category}
@@ -150,26 +150,29 @@ export function MovieCard({
                 <PlayIcon size={23} weight="fill" />
               </span>
             </span>
-
-            <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-2 p-4">
-              <button
-                type="button"
-                onClick={handleToggleFavorite}
-                aria-label={
-                  favorited
-                    ? `Remover ${title} dos favoritos`
-                    : `Favoritar ${title}`
-                }
-                aria-pressed={favorited}
-                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/60 text-white"
-              >
-                <HeartIcon size={20} weight={favorited ? "fill" : "regular"} />
-              </button>
-              <span className="line-clamp-1 text-lg font-semibold text-white">
-                {title}
-              </span>
-            </div>
           </Link>
+          <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 p-4">
+            <span className="line-clamp-1 min-w-0 text-lg font-semibold text-white">
+              {title}
+            </span>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                void handleToggleFavorite();
+              }}
+              aria-label={
+                favorited
+                  ? `Remover ${title} dos favoritos`
+                  : `Favoritar ${title}`
+              }
+              aria-pressed={favorited}
+              className="shrink-0 text-white"
+            >
+              <HeartIcon size={22} weight={favorited ? "fill" : "regular"} />
+            </button>
+          </div>
 
           {hasMenuActions && (
             <div className="absolute right-3 top-3 z-20">
