@@ -57,7 +57,7 @@ export function UserRoleSelect({
         handleRoleChange(event.target.value as UserRole)
       }
       aria-label="Papel do usuário"
-      className="w-full min-w-36 rounded-md border border-border bg-bg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+      className="w-full min-w-36 rounded-md border border-border bg-field px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
     >
       {roles.map((item) => (
         <option key={item.value} value={item.value}>

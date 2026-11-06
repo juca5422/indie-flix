@@ -184,7 +184,7 @@ export function MovieCard({
                     size="icon"
                     aria-label={`Ações para ${title}`}
                     title="Ações do filme"
-                    className="size-9 border border-white/15 bg-bg/85 text-white shadow-md backdrop-blur hover:bg-elevated hover:text-white"
+                    className="size-9 border border-white/15 bg-bg/85 text-white shadow-md backdrop-blur hover:bg-elevated hover:text-white [html.light_&]:text-text [html.light_&]:hover:text-text"
                   >
                     <DotsThreeVerticalIcon size={22} weight="bold" />
                   </Button>

@@ -115,6 +115,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 role={session.user.role as UserRole}
                 context="HOME"
                 isOwner={movie.creatorId === session.user.id}
+                initialFavorited={favoriteIds.has(movie.id)}
               />
             </div>
           ))}

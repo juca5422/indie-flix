@@ -1,7 +1,7 @@
-import { FilmSlate } from "@phosphor-icons/react/ssr";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import { BrandLogo } from "@/components/global/brand-logo";
 import { auth } from "@/lib/auth";
 export const instant = false;
 
@@ -17,7 +17,7 @@ export default async function AuthLayout({
     redirect("/home");
   }
   return (
-    <div className="relative flex flex-1">
+    <div className="relative grid min-h-dvh place-items-center px-5 py-10 sm:px-8">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -26,16 +26,11 @@ export default async function AuthLayout({
         <div className="absolute right-0 bottom-0 size-96 rounded-full bg-accent/15 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-6xl flex-1 items-center px-5 py-10 sm:px-8">
+      <div className="relative w-full max-w-6xl">
         <div className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-20">
           <section className="max-w-lg">
-            <div className="flex items-center gap-3 lg:mb-6">
-              <span className="flex size-11 items-center justify-center rounded-card bg-elevated text-primary">
-                <FilmSlate size={26} weight="duotone" />
-              </span>
-              <span className="text-lg font-semibold tracking-tight">
-                IndieFlix
-              </span>
+            <div className="lg:mb-6">
+              <BrandLogo className="h-12 lg:h-16" />
             </div>
             <div className="hidden lg:block">
               <p className="text-4xl font-semibold tracking-tight text-balance">

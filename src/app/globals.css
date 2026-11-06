@@ -4,6 +4,8 @@
 @theme {
   /* Fundos e superfícies */
   --color-bg: #0f1420;
+  /* Fundo dos campos. No claro, o valor é trocado em html.light. */
+  --color-field: #0f1420;
   --color-surface: #171e2e;
   --color-elevated: #202a3f;
   --color-border: #2b3650;
@@ -87,6 +89,7 @@
 html.light {
   color-scheme: light;
   --color-bg: #c6cdfa;
+  --color-field: #dde2ec;
   --color-surface: #cee0f9;
   --color-elevated: #dde2ec;
   --color-border: #9aa3b5;
@@ -120,6 +123,7 @@ html.light {
   --color-destructive: #d65c65;
   --color-ring: #7183e8;
 }
+
 video::-webkit-media-controls-panel {
   background-image: linear-gradient(
     to top,

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FilmSlateIcon,
-  MagnifyingGlassIcon,
-  SignOutIcon,
-  UserCircleIcon,
-} from "@phosphor-icons/react";
+import { SignOutIcon, UserCircleIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense } from "react";
@@ -14,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 import type { UserRole } from "@/lib/roles";
 import { ROLES, userRoleSchema } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "./brand-logo";
 import { ThemeToggle } from "./theme-toggle";
 
 const links: {
@@ -73,15 +69,9 @@ export default function Navbar() {
         <Link
           href="/home"
           aria-label="IndieFlix — início"
-          className="flex shrink-0 items-center gap-2"
+          className="flex shrink-0 items-center"
         >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-bg">
-            <FilmSlateIcon size={21} weight="duotone" />
-          </span>
-
-          <span className="text-xl font-semibold tracking-tight text-text">
-            Indie<span className="font-display text-primary">Flix</span>
-          </span>
+          <BrandLogo className="h-9" />
         </Link>
 
         {/* Navegação desktop */}

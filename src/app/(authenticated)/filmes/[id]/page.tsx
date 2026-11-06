@@ -7,12 +7,12 @@ import { MoviePlayer } from "@/components/movies/movie-player";
 import { canWatchMovie } from "@/lib/movies/movie-policy";
 import { requireSession, type UserRole } from "@/lib/permissions";
 import {
+  getFavoriteMovieIds,
   getMovieComments,
   getMovieForPlayback,
   getMovieRatingSummary,
   getUserMovieRating,
   getUserWatchProgress,
-  isMovieFavorited,
 } from "@/lib/queries/queries";
 
 type MoviePageProps = {
@@ -23,7 +23,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const session = await requireSession();
   const { id } = await params;
   const movie = await getMovieForPlayback(id);
-  const favorited = await isMovieFavorited(session.user.id, movie.id);
+  const favoriteIds = new Set(await getFavoriteMovieIds(session.user.id));
   if (!movie) {
     notFound();
   }
@@ -53,6 +53,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
         movieId={movie.id}
         initialRating={rating}
         initialProgressSeconds={watchProgress}
+        initialFavorited={favoriteIds.has(movie.id)}
       />
 
       <h1 className="flex flex-wrap items-center gap-3 text-2xl font-semibold tracking-tight">
