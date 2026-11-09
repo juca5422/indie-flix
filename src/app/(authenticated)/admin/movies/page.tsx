@@ -2,7 +2,10 @@ import Link from "next/link";
 import { MovieCard } from "@/components/movies/movie-card";
 import type { MovieContext } from "@/lib/movies/movie-policy";
 import { requireAdmin, type UserRole } from "@/lib/permissions";
-import { getMoviesForModeration } from "@/lib/queries/queries";
+import {
+  getFavoriteMovieIds,
+  getMoviesForModeration,
+} from "@/lib/queries/queries";
 import { cn } from "@/lib/utils";
 
 type AdminMoviesPageProps = {
@@ -16,7 +19,11 @@ export default async function AdminMoviesPage({
   const { aba } = await searchParams;
   const isReview = aba === "revisao";
 
-  const movies = await getMoviesForModeration();
+  const [movies, favoriteIdList] = await Promise.all([
+    getMoviesForModeration(),
+    getFavoriteMovieIds(session.user.id),
+  ]);
+  const favoriteIds = new Set(favoriteIdList);
   const pendingMovies = movies.filter(
     (movie) => movie.status === "PENDING_REVIEW",
   );
@@ -105,6 +112,7 @@ export default async function AdminMoviesPage({
               role={session.user.role as UserRole}
               context={context}
               isOwner={movie.creatorId === session.user.id}
+              initialFavorited={favoriteIds.has(movie.id)}
             />
           ))}
         </div>

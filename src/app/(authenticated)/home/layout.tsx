@@ -13,6 +13,7 @@ export default async function HomeLayout({
 
   const links = [
     { label: "Todos", href: "/home" },
+    { label: "Meus favoritos", href: "/home/meus-favoritos" },
     ...categories.map((category) => ({
       label: category.name,
       href: `/home/${toCategorySlug(category.name)}`,

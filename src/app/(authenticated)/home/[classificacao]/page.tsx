@@ -7,6 +7,7 @@ import { requireSession, type UserRole } from "@/lib/permissions";
 import {
   getCatalogMovies,
   getCategoriesWithPublishedMovies,
+  getFavoriteMovieIds,
 } from "@/lib/queries/queries";
 
 type CategoryPageProps = {
@@ -17,7 +18,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const { classificacao } = await params;
   const session = await requireSession();
 
-  const categories = await getCategoriesWithPublishedMovies();
+  const [categories, catalogMovies, favoriteIdList] = await Promise.all([
+    getCategoriesWithPublishedMovies(),
+    getCatalogMovies(),
+    getFavoriteMovieIds(session.user.id),
+  ]);
+  const favoriteIds = new Set(favoriteIdList);
+
   const category = categories.find(
     (item) => toCategorySlug(item.name) === classificacao,
   );
@@ -26,7 +33,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
-  const movies = (await getCatalogMovies()).filter((movie) =>
+  const movies = catalogMovies.filter((movie) =>
     (movie.categoryIds ?? []).includes(category.id),
   );
 
@@ -58,6 +65,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             role={session.user.role as UserRole}
             context="HOME"
             isOwner={movie.creatorId === session.user.id}
+            initialFavorited={favoriteIds.has(movie.id)}
           />
         ))}
       </div>

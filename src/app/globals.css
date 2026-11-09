@@ -21,6 +21,7 @@
 
   /* Acentos */
   --color-primary: #8b9cf7;
+  --color-on-primary: #0f1420;
   --color-primary-hover: #a3b1fa;
   --color-accent: #5cc8c0;
   --color-star: #f2c46d;
@@ -88,6 +89,7 @@
 }
 html.light {
   color-scheme: light;
+
   --color-bg: #c6cdfa;
   --color-field: #dde2ec;
   --color-surface: #cee0f9;
@@ -103,6 +105,7 @@ html.light {
 
   /* Acentos */
   --color-primary: #7183e8;
+  --color-on-primary: #0f1420;
   --color-primary-hover: #8797f2;
   --color-accent: #208782;
   --color-star: #d99e32;

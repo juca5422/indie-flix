@@ -23,11 +23,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const session = await requireSession();
   const { q } = await searchParams;
   const term = q?.trim() ?? "";
-  const favoriteIds = new Set(await getFavoriteMovieIds(session.user.id));
-  const [categories, movies] = await Promise.all([
+  const [favoriteIdList, categories, movies] = await Promise.all([
+    getFavoriteMovieIds(session.user.id),
     getCategoriesWithPublishedMovies(),
     getCatalogMovies(),
   ]);
+  const favoriteIds = new Set(favoriteIdList);
+  const moviesById = new Map(movies.map((movie) => [movie.id, movie]));
+  const favoriteMovies = favoriteIdList.flatMap((id) => {
+    const movie = moviesById.get(id);
+    return movie ? [movie] : [];
+  });
   if (term) {
     const results = movies.filter((movie) =>
       normalize(movie.title).includes(normalize(term)),
@@ -82,7 +88,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     }))
     .filter((section) => section.movies.length > 0);
 
-  if (sections.length === 0) {
+  if (sections.length === 0 && favoriteMovies.length === 0) {
     return (
       <p className="rounded-xl border border-border p-8 text-center text-sm text-muted">
         Nenhum filme publicado no catálogo.
@@ -92,6 +98,35 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <div className="space-y-10">
+      {favoriteMovies.length > 0 && (
+        <MovieCarousel title="Meus favoritos">
+          {favoriteMovies.map((movie) => (
+            <div key={movie.id} className="w-72 shrink-0">
+              <MovieCard
+                id={movie.id}
+                title={movie.title}
+                synopsis={movie.synopsis}
+                thumbnailUrl={movie.thumbnailUrl}
+                category={movie.category}
+                categoryIds={movie.categoryIds ?? []}
+                creatorName={movie.creatorName}
+                averageRating={
+                  movie.averageRating === null
+                    ? null
+                    : Number(movie.averageRating)
+                }
+                ratingsCount={movie.ratingsCount}
+                status={movie.status}
+                banReason={movie.banReason}
+                role={session.user.role as UserRole}
+                context="HOME"
+                isOwner={movie.creatorId === session.user.id}
+                initialFavorited={true}
+              />
+            </div>
+          ))}
+        </MovieCarousel>
+      )}
       {sections.map((section) => (
         <MovieCarousel key={section.id} title={section.name}>
           {section.movies.map((movie) => (

@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/global/brand-logo";
+import { ThemeToggle } from "@/components/global/theme-toggle";
 import { auth } from "@/lib/auth";
 export const instant = false;
 
@@ -18,6 +19,10 @@ export default async function AuthLayout({
   }
   return (
     <div className="relative grid min-h-dvh place-items-center px-5 py-10 sm:px-8">
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle />
+      </div>
+
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"

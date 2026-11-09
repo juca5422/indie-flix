@@ -1,11 +1,11 @@
 "use client";
 
 import { CircleNotchIcon, SignInIcon } from "@phosphor-icons/react";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { PasswordInput } from "@/components/auth/password-input";
+import { GoogleIcon } from "@/components/global/google-icon";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -172,6 +172,7 @@ export default function LoginPage() {
           disabled={pending}
           onClick={signInWithGoogle}
         >
+          <GoogleIcon />
           Entrar com Google
         </Button>
       </CardContent>

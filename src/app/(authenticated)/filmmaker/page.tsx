@@ -1,12 +1,16 @@
 import { AddMovieDialog } from "@/components/filmmaker/add-movie-dialog";
 import { MovieCard } from "@/components/movies/movie-card";
 import { ROLES, requireRole, type UserRole } from "@/lib/permissions";
-import { getMoviesByCreator } from "@/lib/queries/queries";
+import { getFavoriteMovieIds, getMoviesByCreator } from "@/lib/queries/queries";
 
 export default async function FilmmakerPage() {
   const session = await requireRole([ROLES.FILMMAKER, ROLES.ADMIN]);
 
-  const myMovies = await getMoviesByCreator(session.user.id);
+  const [myMovies, favoriteIdList] = await Promise.all([
+    getMoviesByCreator(session.user.id),
+    getFavoriteMovieIds(session.user.id),
+  ]);
+  const favoriteIds = new Set(favoriteIdList);
 
   return (
     <main className="space-y-6 p-6">
@@ -47,6 +51,7 @@ export default async function FilmmakerPage() {
                   : Number(movie.averageRating)
               }
               ratingsCount={movie.ratingsCount}
+              initialFavorited={favoriteIds.has(movie.id)}
               status={movie.status}
               banReason={movie.banReason}
               showStatus

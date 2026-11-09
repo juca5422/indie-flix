@@ -157,7 +157,8 @@ export async function getFavoriteMovieIds(userId: string) {
   const result = await db
     .select({ movieId: favorites.movieId })
     .from(favorites)
-    .where(eq(favorites.userId, userId));
+    .where(eq(favorites.userId, userId))
+    .orderBy(desc(favorites.createdAt));
 
   return result.map((favorite) => favorite.movieId);
 }

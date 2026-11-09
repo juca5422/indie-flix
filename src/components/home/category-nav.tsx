@@ -13,10 +13,7 @@ export function CategoryNav({ links }: { links: CategoryLink[] }) {
   const pathname = usePathname();
 
   return (
-    <nav
-      aria-label="Categorias"
-      className="flex gap-1 overflow-x-auto border-b border-border"
-    >
+    <nav aria-label="Categorias" className="flex gap-1  border-b border-border">
       {links.map((link) => {
         const active =
           link.href === "/home" ? pathname === "/home" : pathname === link.href;
