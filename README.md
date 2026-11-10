@@ -35,7 +35,7 @@ RF01 — Autenticação e Gestão de Usuários
 RF01.1: O login é obrigatório para acessar o catálogo e visualizar vídeos.
 RF01.2: Autenticação implementada via Better Auth (e-mail e senha).
 RF01.3: Controle de sessão e proteção de rotas com base no perfil do usuário (ADM, FILMMAKER, USER).
-RF02 — Gestão do Catálogo de Filmes
+RF02 — Gestão do Catálogo de Filmes.
 RF02.1: O cadastro de filmes (tanto por Filmmakers quanto por ADMs) deve exigir obrigatoriamente os campos:
 Título (String)
 Enredo / Sinopse (Text)
